@@ -3,514 +3,795 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Morph: every file, any format</title>
-<meta name="description" content="Free node-based file multitool for Windows and Linux. Convert, compress and batch-process video, images, audio, documents, spreadsheets and 3D models.">
-<meta name="theme-color" content="#08080a">
-<meta property="og:title" content="Morph: every file, any format">
+<title>Morph: any file, any shape</title>
+<meta name="description" content="Free node-based file multitool for Windows and Linux. Convert, compress and batch-process video, images, audio, documents, spreadsheets, 3D and archives. Fully offline.">
+<meta name="theme-color" content="#09090b">
+<meta property="og:title" content="Morph: any file, any shape">
 <meta property="og:description" content="Free converter and node-based file multitool for Windows and Linux.">
-<meta property="og:image" content="https://raw.githubusercontent.com/kabiriyer3-cmyk/morph/main/docs/dashboard.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='86 86 340 340'%3E%3Cpath fill='%233b7bff' d='M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css" media="print" onload="this.media='all'">
+<meta property="og:image" content="https://raw.githubusercontent.com/kabiriyer3-cmyk/morph/main/docs/converter.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='86 86 340 340'%3E%3Cpath fill='%23f4f4f5' d='M197.2%20209.9A35.8%2035.8%200%200%201%20182.6%20214.9A103.4%20103.4%200%201%200%20297.1%20329.4A35.8%2035.8%200%200%201%20302.1%20314.8ZM209.6%20197A35.8%2035.8%200%200%200%20214.3%20179.4L214.3%20150.6A59.6%2059.6%200%200%201%20273.9%2091L361.4%2091A59.6%2059.6%200%200%201%20421%20150.6L421%20238.1A59.6%2059.6%200%200%201%20361.4%20297.7L332.6%20297.7A35.8%2035.8%200%200%200%20315%20302.4Z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
 <script>document.documentElement.classList.add('js')</script>
 <style>
-:root{--bg:#08080a;--card:#0f0f12;--card2:#141418;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.13);--tx:#f5f5f6;--mut:#a3a3ad;--dim:#6e6e78;--acc:#3b7bff;--acc2:#8fb0ff;--ok:#34d399}
+:root{--bg:#09090b;--ink:#f4f4f5;--ink2:#d4d4d8;--mute:#a1a1aa;--dim:#71717a;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);--node:#111114;--acc:#4a8cff;--ok:#3ddc84;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--ease:cubic-bezier(.2,.8,.2,1)}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;background:var(--bg);color-scheme:dark}
-body{font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{position:relative;min-height:100vh;overflow-x:hidden;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1.35px);background-size:24px 24px;background-position:12px 12px}
 a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit}
-svg{display:block}
-.wrap{width:min(1180px,100% - 40px);margin:0 auto}
-.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.js .rv{opacity:0;transform:translateY(26px);filter:blur(8px)}
-.rv{transition:opacity .9s var(--d,0s),transform 1s cubic-bezier(.2,.8,.2,1) var(--d,0s),filter .9s var(--d,0s)}
-.js .rv.seen{opacity:1;transform:none;filter:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.mono{font-family:var(--mono)}
+::selection{background:var(--acc);color:#fff}
+
 /* nav */
-.nav{position:fixed;z-index:40;top:14px;left:50%;translate:-50% 0;display:flex;align-items:center;gap:2px;padding:6px;border-radius:999px;background:rgba(15,15,18,.62);border:1px solid var(--line);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);box-shadow:0 14px 40px -16px #000;white-space:nowrap}
-.brand{display:flex;align-items:center;gap:9px;padding:0 12px 0 8px;font-weight:650;letter-spacing:-.01em}
-.brand svg{width:22px;height:22px}
-.nav .l{padding:8px 14px;border-radius:999px;font-size:14px;color:var(--mut);transition:color .2s,background .2s}
-.nav .l:hover{color:var(--tx);background:rgba(255,255,255,.06)}
-.seg{display:inline-flex;padding:3px;gap:2px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
-.seg button{border:0;background:none;cursor:pointer;padding:6px 13px;border-radius:999px;font-size:13px;font-weight:550;color:var(--dim);transition:background .25s,color .25s}
-.seg button:hover{color:var(--tx)}
-.seg button.on{background:rgba(255,255,255,.12);color:var(--tx)}
-.nav .seg{margin:0 4px}
-.nav .btn{height:36px;padding:0 16px;font-size:14px}
-@media (max-width:860px){.nav .l{display:none}}
-/* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:48px;padding:0 24px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.035);font-size:15px;font-weight:600;letter-spacing:-.005em;cursor:pointer;white-space:nowrap;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s}
-.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.24)}
-.btn.pri{background:#fff;color:#09090b;border-color:#fff}
-.btn.pri:hover{background:#e9e9ee}
-.btn small{font-weight:500;opacity:.55;font-size:12.5px}
+.nav{position:fixed;top:14px;left:50%;z-index:40;display:flex;align-items:center;gap:2px;height:46px;padding:5px;border-radius:999px;background:rgba(14,14,17,.74);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);box-shadow:inset 0 0 0 1px var(--line),0 16px 40px -20px rgba(0,0,0,.9);transform:translateX(-50%)}
+.brand{display:flex;align-items:center;gap:9px;height:36px;padding:0 14px 0 9px;font-weight:650;letter-spacing:-.01em}
+.brand svg{width:18px;height:18px}
+.nav .l{display:flex;align-items:center;height:36px;padding:0 13px;border-radius:999px;color:var(--mute);font-weight:500;transition:color .15s,background .15s}
+.nav .l:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.lang{display:flex;gap:2px;margin:0 4px;padding:3px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line)}
+.lang button{height:28px;padding:0 10px;border-radius:999px;color:var(--dim);font:500 11px var(--mono)}
+.lang button.on{background:rgba(255,255,255,.1);color:var(--ink)}
+.nav .get{display:flex;align-items:center;gap:7px;height:36px;padding:0 16px;border-radius:999px;background:var(--ink);color:#09090b;font-weight:600}
+.nav .get svg{width:15px;height:15px}
+
+/* wires */
+#wires{position:absolute;top:0;left:0;z-index:1;pointer-events:none;overflow:visible}
+#wires path{fill:none;stroke-linecap:round}
+#w-base{stroke:rgba(255,255,255,.075);stroke-width:2}
+.w-live{stroke:rgba(255,255,255,.42);stroke-width:2}
+#w-flow{stroke:#fff;stroke-width:2;stroke-dasharray:2 14;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-16}}
+#w-head{fill:#fff;transition:opacity .2s}
+#w-ring{fill:none;stroke:rgba(255,255,255,.3);stroke-width:1.5;transition:opacity .2s}
+
+/* nodes */
+#graph{position:relative;z-index:2;padding:78px 0 12vh}
+.node{position:relative;border-radius:22px;background:var(--node);box-shadow:0 0 0 1px var(--line),0 40px 90px -50px rgba(0,0,0,.95);transition:box-shadow .2s,opacity .7s var(--ease),transform .7s var(--ease)}
+.node:hover{box-shadow:0 0 0 1px var(--line2),0 40px 90px -50px rgba(0,0,0,.95)}
+.node.drag{z-index:6;box-shadow:0 0 0 1.5px rgba(255,255,255,.35),0 50px 100px -40px #000;transition:box-shadow .2s}
+.js .node.rv{opacity:0;transform:translateY(28px)}
+.nh{position:relative;display:flex;align-items:center;gap:10px;height:46px;padding:0 16px 0 12px;border-bottom:1px solid var(--line);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.node.drag .nh{cursor:grabbing}
+.chip{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--c) 17%,transparent);color:var(--c)}
+.chip svg{width:14px;height:14px}
+.nh b{font-size:13.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.nh .id{color:var(--dim);font:11px var(--mono)}
+.nh .st{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--dim);font:11px var(--mono);white-space:nowrap}
+.nh .st i{width:6px;height:6px;border-radius:50%;background:#3f3f46;transition:background .2s}
+.node.live .st i{background:var(--acc)}
+.node.done .st i{background:var(--ok)}
+.node.done .st{color:var(--mute)}
+.nh .bar{position:absolute;left:12px;right:12px;bottom:-1px;height:1px;background:var(--acc);transform:scaleX(0);transform-origin:left}
+.node.live .nh .bar{transform:scaleX(1);transition:transform .7s var(--ease)}
+.node.done .nh .bar{opacity:0;transition:opacity .5s}
+.sock{position:absolute;z-index:3;width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px rgba(255,255,255,.18);transition:box-shadow .3s}
+.sock.in{left:-6px;top:17px}
+.sock.out{right:-6px;bottom:34px}
+.node.done .sock.in,.node.done .sock.out,.hero .sock.out{box-shadow:0 0 0 2px #fff}
+.nb{padding:30px 30px 30px}
+.nb h2{max-width:15ch;font-size:clamp(30px,3.6vw,52px);font-weight:650;line-height:1;letter-spacing:-.045em}
+.nb .lead{max-width:44ch;margin-top:14px;color:var(--mute);font-size:15px;line-height:1.55}
+.n-l,.n-r{width:min(660px,56vw)}
+.n-l{margin-left:6vw}
+.n-r{margin-left:auto;margin-right:6vw}
+.n-w{width:min(1240px,90vw);margin:0 auto}
+.n-c{width:min(860px,90vw);margin:0 auto}
+.node+.node{margin-top:24vh}
+
+/* widgets */
+.wid{margin-top:24px;padding:14px;border-radius:18px;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 1px var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);color:var(--mute);font-weight:550;font-size:13px;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s}
+.pill:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.pill.on{background:var(--ink);box-shadow:none;color:#09090b}
+.pill small{opacity:.6;font:500 10.5px var(--mono)}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line)}
+.seg button{height:28px;padding:0 13px;border-radius:999px;color:var(--dim);font-weight:550;font-size:12.5px;transition:background .15s,color .15s}
+.seg button.on{background:rgba(255,255,255,.1);color:var(--ink)}
+.lbl{margin:16px 2px 8px;color:var(--dim);font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+
+/* convert demo */
+.cvf{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;padding:6px 6px 14px}
+.cvf .fi{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(167,139,250,.14);color:#a78bfa}
+.cvf .fi svg{width:18px;height:18px}
+.cvf b{display:block;overflow:hidden;font:500 clamp(15px,1.5vw,19px) var(--mono);letter-spacing:-.02em;text-overflow:ellipsis;white-space:nowrap}
+.cvf small{display:block;overflow:hidden;color:var(--dim);font:11.5px var(--mono);text-overflow:ellipsis;white-space:nowrap}
+.cvf .ar{color:var(--dim);font:16px var(--mono)}
+.cvf .o b{color:#fff}
+.prog{height:3px;margin:0 6px 14px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.06)}
+.prog i{display:block;width:0;height:100%;border-radius:999px;background:var(--ink)}
+.eng{margin:12px 4px 0;color:var(--dim);font:11.5px var(--mono)}
+.eng span{color:var(--ink2)}
+
+/* compress demo */
+.meter{position:relative;height:86px;margin:20px 4px 6px}
+.meter .tr{position:absolute;left:0;right:0;top:30px;height:22px;border-radius:999px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--line)}
+.meter .res{position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:999px;background:var(--ink);transition:width 1s var(--ease)}
+.meter .lim{position:absolute;top:18px;bottom:22px;width:1px;background:#ff6b6b;transition:left 1s var(--ease)}
+.meter .lim em{position:absolute;top:-18px;left:0;color:#ff8f8f;font:500 11px var(--mono);font-style:normal;white-space:nowrap;transform:translateX(-50%)}
+.meter .sz{position:absolute;right:0;bottom:2px;color:var(--dim);font:11px var(--mono)}
+.cpo{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:4px 4px 2px}
+.cpo b{font:500 clamp(20px,2.2vw,28px) var(--mono);letter-spacing:-.03em}
+.cpo span{color:var(--mute);font-size:13px}
+
+/* profiles drum */
+.drum{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:20px}
+.dr{position:relative;height:250px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);perspective:700px}
+.dr div{position:absolute;left:0;right:0;top:50%;height:44px;margin-top:-22px;display:flex;align-items:center;padding-left:8px;font-size:26px;font-weight:600;letter-spacing:-.03em;white-space:nowrap;will-change:transform,opacity}
+.dmeta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-right:6px;text-align:right}
+.dmeta b{font:500 34px var(--mono);letter-spacing:-.04em}
+.dmeta span{color:var(--dim);font:11.5px var(--mono)}
+.dmeta em{padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--ink2);font:500 11px var(--mono);font-style:normal}
+
+/* preview */
+.shot{position:relative;margin-top:16px;overflow:hidden;border-radius:16px;background:#0b0b0d;box-shadow:inset 0 0 0 1px var(--line);aspect-ratio:16/10}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transform:scale(1.02);transition:opacity .5s,transform .8s var(--ease)}
+.shot img.on{opacity:1;transform:none}
+
+/* formats wall */
+.wall{margin-top:26px;font:500 clamp(18px,2.45vw,38px)/1.32 var(--mono);letter-spacing:-.03em;user-select:none}
+.tk{display:inline-block;margin-right:.55em;color:rgba(255,255,255,.55);cursor:default;transition:color .25s,opacity .25s}
+.wall.act .tk{color:rgba(255,255,255,.11)}
+.wall.act .tk.t{color:#fff}
+.wall.act .tk.src{color:var(--acc)}
+.wcap{display:flex;align-items:center;gap:12px;margin-top:22px;color:var(--mute);font:13px var(--mono)}
+.wcap b{color:var(--ink);font-weight:500}
+.wcap i{width:8px;height:8px;border-radius:50%;background:var(--acc)}
+
+/* save */
+.dls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px}
+.dlc{position:relative;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:20px;background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .2s,background .2s}
+.dlc.me{background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px var(--line2)}
+.dlc .os{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.dlc .os svg{width:18px;height:18px}
+.dlc .os small{margin-left:auto;color:var(--dim);font:11px var(--mono)}
+.dlc .main{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:999px;background:rgba(255,255,255,.09);font-weight:600;transition:background .15s,transform .15s}
+.dlc.me .main{background:var(--ink);color:#09090b}
+.dlc .main:hover{transform:translateY(-1px)}
+.dlc .main svg{width:16px;height:16px}
+.dlc .alt{display:flex;flex-wrap:wrap;gap:6px}
+.dlc .alt a{padding:5px 11px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line);color:var(--mute);font:500 11px var(--mono);transition:color .15s,box-shadow .15s}
+.dlc .alt a:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
+.fine{margin-top:16px;color:var(--dim);font:12px var(--mono)}
+
 /* hero */
-.hero{position:relative;min-height:100vh;display:grid;place-items:center;text-align:center;padding:150px 0 120px;overflow:hidden}
-#field{position:absolute;inset:0;width:100%;height:100%}
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(transparent,var(--bg));pointer-events:none}
-.hero .hin{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
-.tag{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border-radius:999px;border:1px solid var(--line2);background:rgba(15,15,18,.55);backdrop-filter:blur(10px);font-size:13.5px;color:var(--mut);transition:border-color .2s,color .2s}
-.tag:hover{border-color:rgba(255,255,255,.26);color:var(--tx)}
-.tag b{padding:3px 10px;border-radius:999px;background:var(--acc);color:#fff;font-size:12px}
-h1{margin-top:28px;font-size:clamp(50px,8.6vw,112px);line-height:.97;letter-spacing:-.048em;font-weight:700}
-h1 .g{background:linear-gradient(100deg,#fff 5%,#a9c0ff 40%,#3b7bff 65%,#dbe4ff 95%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 9s ease-in-out infinite}
-@keyframes sh{50%{background-position:100% 0}}
-.sub{max-width:650px;margin:26px auto 0;font-size:clamp(16px,1.6vw,19px);color:var(--mut)}
-.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:38px}
-.meta{margin-top:22px;font-size:13px;color:var(--dim)}
-/* screenshot */
-.shot{position:relative;z-index:2;margin-top:-70px;perspective:1800px}
-.tabs{display:flex;width:max-content;margin:0 auto 22px}
-.frame{position:relative;border-radius:26px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02));border:1px solid var(--line2);box-shadow:0 70px 140px -50px #000,0 30px 80px -40px rgba(59,123,255,.25);transform-origin:50% 0;will-change:transform}
-.scr{position:relative;border-radius:19px;overflow:hidden;aspect-ratio:16/10;background:#0b0b0d}
-.scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transform:scale(1.015);transition:opacity .8s,transform 1.2s cubic-bezier(.2,.8,.2,1)}
-.scr img.on{opacity:1;transform:none}
-/* marquee */
-.marq{margin:110px 0 0;display:grid;gap:12px;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
-.track{display:flex;gap:10px;width:max-content;animation:mq 70s linear infinite}
-.track.rev{animation-direction:reverse;animation-duration:80s}
-.track span{padding:10px 20px;border-radius:999px;border:1px solid var(--line);background:var(--card);font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--mut);letter-spacing:.03em}
-@keyframes mq{to{transform:translateX(-50%)}}
-/* sections */
-.sec{padding-top:130px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid rgba(59,123,255,.3);background:rgba(59,123,255,.08);font-size:13px;font-weight:600;color:var(--acc2)}
-h2{margin-top:18px;font-size:clamp(34px,4.6vw,60px);line-height:1.02;letter-spacing:-.042em;font-weight:700;max-width:840px}
-.lead{margin-top:18px;max-width:640px;color:var(--mut);font-size:17px}
-.dim{color:var(--dim)}
-/* bento */
-.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:52px}
-.card{position:relative;grid-column:span 2;padding:30px;border-radius:30px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);overflow:hidden;transition:border-color .3s}
-.card:hover{border-color:var(--line2)}
-.card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0),rgba(255,255,255,.055),transparent 45%);opacity:0;transition:opacity .35s;pointer-events:none}
-.card:hover::before{opacity:1}
-.w3{grid-column:span 3}.w4{grid-column:span 4}.w6{grid-column:span 6}
-.card h3{font-size:22px;letter-spacing:-.025em;font-weight:650}
-.card p{margin-top:8px;color:var(--mut);font-size:15px;max-width:520px}
-.viz{margin-top:26px}
-@media (max-width:920px){.bento{grid-template-columns:1fr}.card,.w3,.w4,.w6{grid-column:auto}}
-.steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.step{display:inline-flex;align-items:center;gap:10px;padding:7px 16px 7px 7px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:14px;font-weight:550}
-.step b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--acc);font-size:12.5px}
-.steps .ico{color:var(--dim);width:16px}
-.files{display:grid;gap:8px;margin-top:16px}
-.file,.row{display:grid;grid-template-columns:38px 1fr auto;gap:14px;align-items:center;padding:9px 16px 9px 9px;border-radius:999px;background:rgba(255,255,255,.025);border:1px solid var(--line)}
-.k{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(59,123,255,.13);color:var(--acc2)}
-.fn,.nm{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:550}
-.fn small,.nm small{color:var(--dim);font-weight:500}
-.bar{height:5px;margin-top:7px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
-.bar i{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,var(--acc),#9fbcff)}
-.file .bar i{width:0;animation:pg 3.6s cubic-bezier(.5,0,.2,1) var(--t,0s) infinite}
-@keyframes pg{0%{width:0}55%,90%{width:100%;opacity:1}100%{width:100%;opacity:0}}
-.file em,.chips span{font-style:normal;padding:6px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--mut)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips span{transition:background .35s,color .35s,border-color .35s}
-.chips span.on{background:#fff;color:#09090b;border-color:#fff}
-.chips.dev span:nth-child(3n+1){color:#c7d6ff}
-.graph{width:100%;height:auto;overflow:visible}
-.graph rect{fill:#17171b;stroke:rgba(255,255,255,.12)}
-.graph text{fill:#d4d4d8;font:600 11.5px Inter,system-ui,sans-serif}
-.graph .w{fill:none;stroke:var(--acc);stroke-width:2.2;stroke-dasharray:6 7;animation:fl 1.1s linear infinite}
-.graph .w2{fill:none;stroke:rgba(143,176,255,.25);stroke-width:2.2}
-@keyframes fl{to{stroke-dashoffset:-26}}
-.priv{display:flex;align-items:center;gap:18px}
-.priv .big{width:54px;height:54px;padding:13px;border-radius:50%;background:rgba(52,211,153,.12);color:var(--ok);stroke-width:1.6;box-sizing:content-box}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:34px 30px}
-.stats div{display:flex;flex-direction:column;gap:2px;padding-left:22px;border-left:1px solid var(--line)}
-.stats b{font-size:clamp(38px,4.4vw,56px);font-weight:700;letter-spacing:-.045em;line-height:1}
-.stats span{color:var(--mut);font-size:14px}
-@media (max-width:920px){.stats{grid-template-columns:1fr 1fr;row-gap:28px}}
-/* share */
-.share{display:grid;grid-template-columns:1fr 1.12fr;gap:56px;align-items:center}
-@media (max-width:920px){.share{grid-template-columns:1fr}}
-.svc{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
-.svc button{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.03);cursor:pointer;font-size:14px;font-weight:550;color:var(--mut);transition:background .25s,color .25s,border-color .25s,transform .25s}
-.svc button:hover{color:var(--tx);transform:translateY(-1px)}
-.svc button b{font-size:12px;font-weight:600;color:var(--dim)}
-.svc button.on{background:#fff;color:#09090b;border-color:#fff}
-.svc button.on b{color:#5b5b66}
-.panel{padding:18px;border-radius:32px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);box-shadow:0 40px 100px -50px #000}
-.panel-h{display:flex;justify-content:space-between;align-items:center;padding:6px 8px 16px 12px;font-size:14px;color:var(--mut)}
-.panel-h b{color:var(--tx)}
-.limit{padding:6px 14px;border-radius:999px;background:rgba(59,123,255,.15);color:var(--acc2);font-weight:650;font-size:13px}
-#rows{display:grid;gap:8px}
-.row .bar i{transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
-.row.fit .bar i{background:linear-gradient(90deg,#10b981,#6ee7b7)}
-.sz{font:600 13px/1.25 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-align:right;min-width:96px}
-.sz s{display:block;color:var(--dim);font-weight:500;font-size:11.5px}
-.note{margin:14px 12px 4px;font-size:12.5px;color:var(--dim)}
-/* download */
-.dl{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px}
-@media (max-width:820px){.dl{grid-template-columns:1fr}}
-.os{position:relative;padding:34px;border-radius:34px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);overflow:hidden}
-.os::after{content:"";position:absolute;width:340px;height:340px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(closest-side,rgba(59,123,255,.16),transparent);pointer-events:none;opacity:.5}
-.os.cur{border-color:rgba(59,123,255,.42)}
-.os.cur::after{opacity:1}
-.os h3{display:flex;align-items:center;gap:12px;font-size:28px;letter-spacing:-.03em}
-.os h3 .ico{width:28px;height:28px}
-.os p{margin-top:6px;color:var(--mut)}
-.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
-.fine{margin-top:22px;color:var(--dim);font-size:14px}
-.fine a{color:var(--mut);border-bottom:1px solid var(--line2)}
-.foot{display:flex;flex-wrap:wrap;align-items:center;gap:18px;justify-content:space-between;margin-top:140px;padding:30px 0 44px;border-top:1px solid var(--line);color:var(--dim);font-size:14px}
-.foot .links{display:flex;gap:6px}
-.foot .links a{padding:7px 14px;border-radius:999px;border:1px solid var(--line)}
-.foot .links a:hover{color:var(--tx);border-color:var(--line2)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.js .rv{opacity:1;transform:none;filter:none}}
+.hero{height:calc(100vh - 96px);min-height:640px;margin:0 2vw}
+.hero .nb{position:absolute;inset:46px 0 0 0;padding:0;overflow:hidden;border-radius:0 0 22px 22px}
+#dots{position:absolute;inset:0;width:100%;height:100%}
+.h1{position:absolute;left:3vw;bottom:7vh;z-index:2;font-size:clamp(64px,10.6vw,200px);font-weight:700;line-height:.84;letter-spacing:-.065em;mix-blend-mode:difference;pointer-events:none}
+.h1 span{display:block}
+.side{position:absolute;top:5vh;left:3vw;z-index:3;width:min(390px,36vw)}
+.side p{color:var(--mute);font-size:15.5px;line-height:1.55}
+.side p b{color:var(--ink);font-weight:600}
+.ctas{display:flex;gap:8px;margin-top:22px}
+.cta{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;background:var(--ink);color:#09090b;font-weight:600;transition:transform .2s var(--ease)}
+.cta svg{width:16px;height:16px}
+.cta.g{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px var(--line2);color:var(--ink)}
+.meta{position:absolute;right:2.4vw;bottom:5vh;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:18px}
+.stats{display:grid;grid-template-columns:repeat(4,auto);gap:4px 26px;text-align:right}
+.stats b{display:block;font:500 22px var(--mono);letter-spacing:-.04em}
+.stats span{color:var(--dim);font:10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.runb{display:inline-flex;align-items:center;gap:10px;height:42px;padding:0 8px 0 18px;border-radius:999px;background:var(--ink);color:#09090b;font-weight:650}
+.runb svg{width:13px;height:13px}
+.runb kbd{padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.08);font:500 11px var(--mono)}
+#shape{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;padding:6px 13px;border-radius:999px;background:rgba(9,9,11,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px var(--line2);color:var(--ink2);font:500 12px var(--mono);white-space:nowrap;transform:translateX(-50%);pointer-events:none}
+#shape i{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.tip{color:var(--dim);font:11px var(--mono)}
+
+footer{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;width:min(1240px,90vw);margin:0 auto;padding:30px 0 40px;border-top:1px solid var(--line);color:var(--dim);font:12px var(--mono)}
+footer a:hover{color:var(--ink)}
+footer .fl{display:flex;gap:18px}
+
+@media (max-width:980px){
+  .n-l,.n-r{width:min(640px,88vw);margin-left:auto;margin-right:auto}
+  .n-l{transform-origin:left}
+  .side{width:min(420px,52vw)}
+  .stats{grid-template-columns:repeat(2,auto)}
+}
+@media (max-width:760px){
+  .nav .l{display:none}
+  .hero{height:auto;min-height:0;margin:0 3vw}
+  .hero .nb{position:relative;inset:auto;display:flex;flex-direction:column;padding:0 20px 24px}
+  #dots{position:relative;display:block;flex:none;height:52vh;margin:0 -20px}
+  .h1{position:relative;order:1;left:0;bottom:0;margin-top:-3vh;font-size:16.5vw}
+  .side{order:2}
+  .meta{order:3}
+  .side{position:relative;top:0;left:0;width:auto;margin-top:22px}
+  .meta{position:relative;right:0;bottom:0;align-items:flex-start;margin-top:26px}
+  .stats{grid-template-columns:repeat(2,auto);text-align:left}
+  .n-l,.n-r,.n-w,.n-c{width:auto;margin-left:3vw;margin-right:3vw}
+  .node+.node{margin-top:14vh}
+  .nb{padding:24px 20px}
+  .cvf{grid-template-columns:auto minmax(0,1fr);row-gap:8px}
+  .cvf .ar{display:none}
+  .cvf .o{grid-column:2}
+  .drum{grid-template-columns:1fr}
+  .dmeta{flex-direction:row;align-items:center;justify-content:space-between}
+  .dr div{font-size:20px}
+  .dls{grid-template-columns:1fr}
+  .tip{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7ea2ff"/></linearGradient>
-<symbol id="mark" viewBox="86 86 340 340"><path d="M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z"/></symbol>
-<symbol id="i-win" viewBox="0 0 24 24"><path stroke="none" fill="currentColor" d="M3 5.6l7.4-1v7H3zM11.6 4.4L21 3v8.6h-9.4zM3 12.6h7.4v7L3 18.5zM11.6 12.6H21V21l-9.4-1.3z"/></symbol>
-<symbol id="i-tux" viewBox="0 0 24 24"><g stroke="none"><ellipse cx="12" cy="12.6" rx="6.6" ry="8.6" fill="currentColor"/><ellipse cx="12" cy="14.8" rx="4" ry="5.4" fill="#0b0b0d" opacity=".85"/><circle cx="10" cy="8.4" r="1.1" fill="#0b0b0d"/><circle cx="14" cy="8.4" r="1.1" fill="#0b0b0d"/><path d="M10.3 10.4h3.4L12 12.1z" fill="#f5b83d"/></g><path d="M6.6 20.6h3.8M13.6 20.6h3.8" stroke="#f5b83d" stroke-width="2.2"/></symbol>
-<symbol id="i-gh" viewBox="0 0 16 16"><path stroke="none" fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></symbol>
-<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
-<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
-<symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7.5 5v14M16.5 5v14M3 9.7h4.5M16.5 9.7H21M3 14.3h4.5M16.5 14.3H21"/></symbol>
-<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="9.5" r="1.6"/><path d="m4 17 5-5 4 4 2.5-2.5L20 18"/></symbol>
-<symbol id="i-gif" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="4"/><path d="M10 10H8.6a1.6 1.6 0 0 0 0 4H10v-2M13 10v4M16 14v-4h2.5M16 12h2"/></symbol>
-<symbol id="i-audio" viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></symbol>
-<symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
-<symbol id="i-zip" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M12 3v2m0 2v2m0 2v2m-1.6 2h3.2v3h-3.2z"/></symbol>
-<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
-</defs></svg>
-
 <nav class="nav">
-  <a class="brand" href="#top"><svg><use href="#mark" fill="url(#mg)"/></svg>Morph</a>
-  <a class="l" href="#features" data-i="n1">Features</a>
-  <a class="l" href="#share" data-i="n2">Compress</a>
-  <a class="l" href="#download" data-i="n3">Download</a>
+  <a class="brand" href="#"><svg viewBox="86 86 340 340" aria-hidden="true"><path fill="currentColor" d="M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z"/></svg>Morph</a>
+  <a class="l" href="#convert" data-t="nav.flow">Workflow</a>
+  <a class="l" href="#formats" data-t="nav.formats">Formats</a>
   <a class="l" href="https://github.com/kabiriyer3-cmyk/morph">GitHub</a>
-  <div class="seg lang"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div>
-  <a class="btn pri" href="#download"><svg class="ico"><use href="#i-down"/></svg><span data-i="n4">Get Morph</span></a>
+  <div class="lang"><button data-lang="en">EN</button><button data-lang="ru">RU</button></div>
+  <a class="get" href="#save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span data-t="nav.get">Download</span></a>
 </nav>
 
-<header class="hero" id="top">
-  <canvas id="field" aria-hidden="true"></canvas>
-  <div class="hin wrap">
-    <a class="tag rv" href="#features"><b>v0.4</b><span data-i="tag">New: Converter window, Compress for Discord, 81 device profiles</span><svg class="ico" style="width:15px;height:15px"><use href="#i-arrow"/></svg></a>
-    <h1 class="rv" style="--d:.08s"><span data-i="h1a">Every file.</span><br><span class="g" data-i="h1b">Any format.</span></h1>
-    <p class="sub rv" style="--d:.16s" data-i="sub">Morph converts, compresses and batch-processes video, images, audio, documents, spreadsheets and 3D models. A one-window converter for everyone, a node editor for power users. Free, local, open source.</p>
-    <div class="cta rv" style="--d:.24s">
-      <a class="btn pri" id="hero-dl" href="#download"><svg class="ico"><use href="#i-win"/></svg><span id="hero-dl-l">Download for Windows</span></a>
-      <a class="btn" href="https://github.com/kabiriyer3-cmyk/morph"><svg class="ico"><use href="#i-gh"/></svg><span data-i="gh">View on GitHub</span></a>
-    </div>
-    <p class="meta rv" style="--d:.32s"><span class="ver">v0.4.0</span> · Windows 10/11 · Linux · <span data-i="meta">free and open source, MIT</span></p>
-  </div>
-</header>
+<svg id="wires" aria-hidden="true"><defs><mask id="wmask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><g id="w-masks"></g></mask></defs><path id="w-base"/><g id="w-lives"></g><path id="w-flow" mask="url(#wmask)"/><circle id="w-ring" r="11" opacity="0"/><circle id="w-head" r="4.5" opacity="0"/></svg>
 
-<section class="shot wrap">
-  <div class="seg tabs rv"><button class="on" data-i="t1">Dashboard</button><button data-i="t2">Converter</button><button data-i="t3">Node editor</button></div>
-  <div class="frame rv" id="frame"><div class="scr"><img class="on" src="dashboard.png" alt="Morph dashboard"><img src="converter.png" alt="Morph converter window"><img src="screenshot.png" alt="Morph node editor"></div></div>
-</section>
-
-<div class="marq" aria-hidden="true"><div class="track" id="mq1"></div><div class="track rev" id="mq2"></div></div>
-
-<section class="sec wrap" id="features">
-  <span class="eyebrow rv" data-i="f0">Why Morph</span>
-  <h2 class="rv" data-i="f1">Everything your old converter did. Then a lot more.</h2>
-  <p class="lead rv" data-i="f2">Switching from Bigasoft, Format Factory or HandBrake takes a minute: the same Add files, Profile, Convert flow, with 101 nodes underneath for anything custom.</p>
-  <div class="bento">
-    <article class="card w4 rv">
-      <h3 data-i="c1">The converter you already know</h3>
-      <p data-i="c1d">Add files, pick a profile, press Convert. Edits apply to every file at once and the result lands next to the originals.</p>
-      <div class="viz">
-        <div class="steps"><span class="step"><b>1</b><span data-i="s1">Add files</span></span><svg class="ico"><use href="#i-arrow"/></svg><span class="step"><b>2</b><span data-i="s2">Pick a profile</span></span><svg class="ico"><use href="#i-arrow"/></svg><span class="step"><b>3</b><span data-i="s3">Convert</span></span></div>
-        <div class="files">
-          <div class="file"><span class="k"><svg class="ico"><use href="#i-film"/></svg></span><div><div class="fn">trip.mp4<small>176 MB</small></div><div class="bar"><i></i></div></div><em>iPhone</em></div>
-          <div class="file"><span class="k"><svg class="ico"><use href="#i-film"/></svg></span><div><div class="fn">drone.mov<small>394 MB</small></div><div class="bar"><i style="--t:.45s"></i></div></div><em>iPhone</em></div>
-          <div class="file"><span class="k"><svg class="ico"><use href="#i-film"/></svg></span><div><div class="fn">concert.mkv<small>1.2 GB</small></div><div class="bar"><i style="--t:.9s"></i></div></div><em>iPhone</em></div>
-        </div>
+<main id="graph">
+  <section class="node hero done" id="top" style="--c:#9aa4b8">
+    <div class="nh"><span class="chip" data-i="files"></span><b data-t="n0">Load Files</b><span class="id">#1</span><span class="tip" data-t="tip">· drag any node by its header</span><span class="st"><i></i><span data-t="n0.st">ready</span></span></div>
+    <div class="nb">
+      <canvas id="dots"></canvas>
+      <div id="shape"><i></i><span id="shape-t">any file</span></div>
+      <div class="side">
+        <p data-th="hero.p">Morph converts, compresses and batch-processes <b>video, images, audio, documents, spreadsheets, 3D and archives</b>. A Converter window for everyday jobs, a node graph for everything else. Free, open source, fully offline.</p>
+        <div class="ctas"><a class="cta" href="#save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span data-t="cta.dl">Download</span></a><a class="cta g" href="https://github.com/kabiriyer3-cmyk/morph"><span data-t="cta.src">Source code</span></a></div>
       </div>
-    </article>
-    <article class="card rv" style="--d:.08s">
-      <h3 data-i="c2">81 device profiles</h3>
-      <p data-i="c2d">Phones, consoles, TVs, discs and platforms, tuned and ready.</p>
-      <div class="viz chips dev"><span>iPhone</span><span>iPad</span><span>Galaxy</span><span>Pixel</span><span>PS5</span><span>Xbox</span><span>Switch</span><span>Steam Deck</span><span>Apple TV</span><span>Smart TV</span><span>DVD</span><span>VCD</span><span>YouTube</span><span>TikTok</span><span>ProRes</span></div>
-    </article>
-    <article class="card rv">
-      <h3 data-i="c3">Nodes when you need power</h3>
-      <p data-i="c3d">Chain operations into reusable workflows and run them on thousands of files.</p>
-      <svg class="viz graph" viewBox="0 0 400 150" aria-hidden="true">
-        <path class="w2" d="M118 43C146 43 126 107 154 107"/><path class="w" d="M118 43C146 43 126 107 154 107"/>
-        <path class="w2" d="M246 107C274 107 254 43 282 43"/><path class="w" d="M246 107C274 107 254 43 282 43" style="animation-delay:-.5s"/>
-        <rect x="6" y="16" width="112" height="54" rx="16"/><circle cx="26" cy="43" r="5" fill="#9AA4B8"/><text x="38" y="47">Load Files</text>
-        <rect x="154" y="80" width="92" height="54" rx="16"/><circle cx="174" cy="107" r="5" fill="#3b7bff"/><text x="186" y="111">Convert</text>
-        <rect x="282" y="16" width="112" height="54" rx="16"/><circle cx="302" cy="43" r="5" fill="#34d399"/><text x="314" y="47">Save</text>
-      </svg>
-    </article>
-    <article class="card rv" style="--d:.08s">
-      <h3 data-i="c4">Edit once, apply to all</h3>
-      <p data-i="c4d">The classic edit tools, for every file in the list.</p>
-      <div class="viz chips" id="edits"><span data-i="e1">Trim</span><span data-i="e2">Crop</span><span data-i="e3">Rotate</span><span data-i="e4">Effects</span><span data-i="e5">Watermark</span><span data-i="e6">Subtitles</span><span data-i="e7">Merge into one</span><span data-i="e8">Snapshot</span></div>
-    </article>
-    <article class="card rv" style="--d:.16s">
-      <h3 data-i="c5">Local and private</h3>
-      <p data-i="c5d">Your files never leave your computer.</p>
-      <div class="viz priv"><svg class="ico big"><use href="#i-shield"/></svg><div class="chips"><span data-i="p1">No upload</span><span data-i="p2">No account</span><span data-i="p3">No watermark</span></div></div>
-    </article>
-    <article class="card w6 stats rv">
-      <div><b data-count="101">101</b><span data-i="st1">nodes</span></div>
-      <div><b data-count="81">81</b><span data-i="st2">device profiles</span></div>
-      <div><b data-count="27">27</b><span data-i="st3">ready templates</span></div>
-      <div><b data-count="80" data-plus>80+</b><span data-i="st4">output formats</span></div>
-    </article>
-  </div>
-</section>
+      <h1 class="h1"><span data-t="h1a">Any file.</span><span data-t="h1b">Any shape.</span></h1>
+      <div class="meta">
+        <div class="stats"><div><b>101</b><span data-t="s.nodes">nodes</span></div><div><b>81</b><span data-t="s.prof">profiles</span></div><div><b>80</b><span data-t="s.fmt">formats</span></div><div><b>0</b><span data-t="s.up">uploads</span></div></div>
+        <button class="runb" id="run"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></svg><span data-t="run">Run</span><kbd data-t="run.k">scroll</kbd></button>
+      </div>
+    </div>
+    <i class="sock out"></i>
+  </section>
 
-<section class="sec wrap" id="share">
-  <div class="share">
-    <div>
-      <span class="eyebrow rv" data-i="sh0">Compress for services</span>
-      <h2 class="rv" data-i="sh1">Pick a service. Morph fits the files.</h2>
-      <p class="lead rv" data-i="sh2">Discord, Telegram, WhatsApp, Gmail and more. Every kind of file gets its own strategy, splitting into parts is the last resort.</p>
-      <div class="svc rv" id="svc"></div>
+  <section class="node n-l rv" id="convert" style="--c:#4a92ff">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="convert"></span><b data-t="n1">Convert Anything</b><span class="id">#2</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n1.h">Drop in anything. Pick what it becomes.</h2>
+      <p class="lead" data-t="n1.p">Pick a target and Morph picks the engine for every file: FFmpeg, LibreOffice, Pandoc or the built-in Rust core.</p>
+      <div class="wid">
+        <div class="cvf"><span class="fi" data-i="play"></span><div><b>trip.mov</b><small>394 MB · H.264 · 4K</small></div><span class="ar">→</span><div class="o"><b id="cv-out">trip.mp4</b><small id="cv-res">H.264 + AAC · 1080p · 41 MB</small></div></div>
+        <div class="prog"><i id="cv-bar"></i></div>
+        <div class="row" id="cv-t"></div>
+        <div class="eng"><span data-t="eng">engine</span>: <span id="cv-eng">FFmpeg</span></div>
+      </div>
     </div>
-    <div class="panel rv" id="panel">
-      <div class="panel-h"><span><b id="svc-name">Discord</b> · <span data-i="lim">upload limit</span></span><span class="limit" id="svc-lim">10 MB</span></div>
-      <div id="rows"></div>
-      <p class="note" data-i="sh3">Sizes are an example, real results depend on your files.</p>
-    </div>
-  </div>
-</section>
+    <i class="sock out"></i>
+  </section>
 
-<section class="sec wrap" id="download">
-  <span class="eyebrow rv" data-i="d0">Download</span>
-  <h2 class="rv"><span data-i="d1">Get Morph</span> <span class="ver dim">v0.4.0</span></h2>
-  <p class="lead rv" data-i="d2">One installer, everything inside. FFmpeg, Pandoc and LibreOffice install from the app with one click.</p>
-  <div class="dl">
-    <div class="os rv" id="os-win">
-      <h3><svg class="ico"><use href="#i-win"/></svg>Windows</h3>
-      <p data-i="d3">Windows 10 and 11, 64-bit</p>
-      <div class="btns"><a class="btn pri" data-a="exe" href="#"><svg class="ico"><use href="#i-down"/></svg><span data-i="d4">Installer</span><small>.exe</small></a><a class="btn" data-a="msi" href="#">MSI <small>.msi</small></a><a class="btn" data-a="port" href="#"><span data-i="d5">Portable</span><small>.exe</small></a></div>
+  <section class="node n-r rv" id="compress" style="--c:#a78bfa">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="send"></span><b data-t="n2">Compress for Services</b><span class="id">#3</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n2.h">Under the limit. Every file, every time.</h2>
+      <p class="lead" data-t="n2.p">Not just video. Photos get a quality search, PDFs Ghostscript, GIFs fewer colors, everything else zip and split into parts.</p>
+      <div class="wid">
+        <div class="row" id="cp-s"></div>
+        <div class="lbl" data-t="cp.k">file</div>
+        <div class="seg" id="cp-k"></div>
+        <div class="meter"><div class="tr"><i class="res" id="cp-res"></i></div><span class="lim" id="cp-lim"><em id="cp-lt">10 MB</em></span><span class="sz" id="cp-sz">148 MB</span></div>
+        <div class="cpo"><b id="cp-num">148 MB → 9.6 MB</b><span id="cp-how"></span></div>
+      </div>
     </div>
-    <div class="os rv" id="os-linux" style="--d:.08s">
-      <h3><svg class="ico"><use href="#i-tux"/></svg>Linux</h3>
-      <p data-i="d6">x86_64: Ubuntu, Debian, Fedora, Arch and more</p>
-      <div class="btns"><a class="btn pri" data-a="appimage" href="#"><svg class="ico"><use href="#i-down"/></svg>AppImage<small></small></a><a class="btn" data-a="deb" href="#">.deb <small></small></a><a class="btn" data-a="rpm" href="#">.rpm <small></small></a></div>
-    </div>
-  </div>
-  <p class="fine rv"><span data-i="d7">All versions and checksums:</span> <a href="https://github.com/kabiriyer3-cmyk/morph/releases">GitHub Releases</a></p>
-</section>
+    <i class="sock out"></i>
+  </section>
 
-<footer class="wrap foot">
-  <a class="brand" href="#top"><svg><use href="#mark" fill="url(#mg)"/></svg>Morph</a>
-  <span data-i="ft">MIT license · built with Rust and Tauri</span>
-  <span class="links"><a href="https://github.com/kabiriyer3-cmyk/morph">GitHub</a><a href="https://github.com/kabiriyer3-cmyk/morph/releases">Releases</a><a href="https://github.com/kabiriyer3-cmyk/morph#readme">README</a></span>
-</footer>
+  <section class="node n-l rv" id="profiles" style="--c:#5ac8fa">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="phone"></span><b data-t="n3">Device Profiles</b><span class="id">#4</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n3.h">81 profiles. Pick a device, done.</h2>
+      <p class="lead" data-t="n3.p">The presets you know from Bigasoft and Format Factory. Morph sets the codec, size and frame rate, you keep full manual control.</p>
+      <div class="wid drum"><div class="dr" id="drum"></div><div class="dmeta"><em id="dr-g">Apple</em><b id="dr-n">01</b><span>/ 81</span></div></div>
+    </div>
+    <i class="sock out"></i>
+  </section>
+
+  <section class="node n-r rv" id="preview" style="--c:#9aa4b8">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="eye"></span><b data-t="n4">Preview</b><span class="id">#5</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n4.h">A Converter for every day. Nodes for the rest.</h2>
+      <div class="row" id="sh-t" style="margin-top:22px"><button class="pill on" data-s="0" data-t="sh.0">Converter</button><button class="pill" data-s="1" data-t="sh.1">Dashboard</button><button class="pill" data-s="2" data-t="sh.2">Node editor</button></div>
+      <div class="shot"><img class="on" src="converter.png" alt="Morph Converter window" loading="lazy"><img src="dashboard.png" alt="Morph dashboard" loading="lazy"><img src="screenshot.png" alt="Morph node editor" loading="lazy"></div>
+    </div>
+    <i class="sock out"></i>
+  </section>
+
+  <section class="node n-w rv" id="formats" style="--c:#4ade80">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="grid"></span><b data-t="n5">Formats</b><span class="id">#6</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n5.h" style="max-width:20ch">Point at a format. See where it can go.</h2>
+      <div class="wall" id="wall"></div>
+      <div class="wcap" id="wcap"><i></i><span data-t="w.hint">hover or tap any format</span></div>
+    </div>
+    <i class="sock out"></i>
+  </section>
+
+  <section class="node n-c rv" id="save" style="--c:#f4f4f5">
+    <i class="sock in"></i>
+    <div class="nh"><span class="chip" data-i="save"></span><b data-t="n6">Save</b><span class="id">#7</span><span class="st"><i></i><span class="stt">idle</span></span><span class="bar"></span></div>
+    <div class="nb">
+      <h2 data-t="n6.h">Get Morph.</h2>
+      <p class="lead" data-t="n6.p">Windows 10/11 and Linux x64. No account, no telemetry, nothing leaves your computer.</p>
+      <div class="dls">
+        <div class="dlc" id="d-win"><div class="os"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3Zm8.5-1.2L21 3v8.5h-9.5ZM3 12.5h7.5v7.1L3 18.5Zm8.5 0H21V21l-9.5-1.3Z"/></svg>Windows<small id="d-wv"></small></div><a class="main" id="d-exe" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span data-t="d.win">Installer .exe</span></a><div class="alt"><a id="d-msi" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest">MSI</a><a id="d-port" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest" data-t="d.port">Portable</a></div></div>
+        <div class="dlc" id="d-lin"><div class="os"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 10 11 4 5M12 19h8"/></svg>Linux<small id="d-lv"></small></div><a class="main" id="d-app" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg><span>AppImage</span></a><div class="alt"><a id="d-deb" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest">.deb</a><a id="d-rpm" href="https://github.com/kabiriyer3-cmyk/morph/releases/latest">.rpm</a></div></div>
+      </div>
+      <p class="fine" id="d-fine" data-t="d.fine">FFmpeg, Pandoc, LibreOffice and 7-Zip install from the app in one click.</p>
+    </div>
+  </section>
+</main>
+
+<footer><span>Morph · MIT · Rust + Tauri</span><span class="fl"><a href="https://github.com/kabiriyer3-cmyk/morph">GitHub</a><a href="https://github.com/kabiriyer3-cmyk/morph/releases" data-t="f.rel">Releases</a><a href="https://github.com/kabiriyer3-cmyk/morph/issues" data-t="f.iss">Issues</a></span></footer>
 
 <script>
 (() => {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const REPO = 'kabiriyer3-cmyk/morph';
-  const REL = 'https://github.com/' + REPO + '/releases/latest';
-  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const UA = navigator.userAgent;
-  const linux = /Linux|X11/.test(UA) && !/Android/.test(UA);
-  const RU = {
-    n1: 'Возможности', n2: 'Сжатие', n3: 'Скачать', n4: 'Скачать',
-    tag: 'Новое: окно конвертера, сжатие для Discord, 81 профиль устройств',
-    h1a: 'Любой файл.', h1b: 'Любой формат.',
-    sub: 'Morph конвертирует, сжимает и пакетно обрабатывает видео, картинки, аудио, документы, таблицы и 3D. Простой конвертер в одно окно для всех и редактор нод для продвинутых. Бесплатно, локально, с открытым кодом.',
-    gh: 'Открыть на GitHub', meta: 'бесплатно, открытый код, MIT',
-    t1: 'Дашборд', t2: 'Конвертер', t3: 'Редактор нод',
-    f0: 'Почему Morph', f1: 'Всё, что умел старый конвертер. И намного больше.',
-    f2: 'Переход с Bigasoft, Format Factory или HandBrake занимает минуту: тот же порядок «Добавить файлы, Профиль, Конвертировать», а под капотом 101 нода для чего угодно.',
-    c1: 'Конвертер, который вы уже знаете', c1d: 'Добавьте файлы, выберите профиль, нажмите «Конвертировать». Правки применяются ко всем файлам сразу, результат ложится рядом с оригиналами.',
-    s1: 'Добавить файлы', s2: 'Выбрать профиль', s3: 'Конвертировать',
-    c2: '81 профиль устройств', c2d: 'Телефоны, консоли, телевизоры, диски и площадки, всё уже настроено.',
-    c3: 'Ноды, когда нужна мощь', c3d: 'Соединяйте операции в многоразовые сценарии и запускайте на тысячах файлов.',
-    c4: 'Настроил раз, применилось ко всем', c4d: 'Классические инструменты правки для каждого файла в списке.',
-    e1: 'Обрезка', e2: 'Кадрирование', e3: 'Поворот', e4: 'Эффекты', e5: 'Водяной знак', e6: 'Субтитры', e7: 'Склейка в один', e8: 'Снимок кадра',
-    c5: 'Локально и приватно', c5d: 'Файлы никогда не покидают ваш компьютер.', p1: 'Без загрузки', p2: 'Без аккаунта', p3: 'Без водяных знаков',
-    st1: 'нода', st2: 'профиль устройств', st3: 'готовых шаблонов', st4: 'форматов на выходе',
-    sh0: 'Сжатие для сервисов', sh1: 'Выберите сервис. Morph подгонит файлы.',
-    sh2: 'Discord, Telegram, WhatsApp, Gmail и другие. Для каждого типа файла своя стратегия, деление на части только в крайнем случае.',
-    sh3: 'Размеры для примера, реальный результат зависит от файлов.', lim: 'лимит загрузки',
-    d0: 'Скачать', d1: 'Скачать Morph', d2: 'Один установщик, всё внутри. FFmpeg, Pandoc и LibreOffice ставятся из приложения в один клик.',
-    d3: 'Windows 10 и 11, 64-бит', d4: 'Установщик', d5: 'Портативная', d6: 'x86_64: Ubuntu, Debian, Fedora, Arch и другие', d7: 'Все версии и контрольные суммы:',
-    ft: 'Лицензия MIT · сделано на Rust и Tauri',
-  };
-  const EN = {};
-  $$('[data-i]').forEach((e) => (EN[e.dataset.i] = e.textContent));
-  const plural = (n) => (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? ' части' : ' частей');
-  const X = {
-    en: { win: 'Download for Windows', linux: 'Download for Linux', video: 'bitrate fit, up to 1080p', image: 'quality search, then resize', gif: 'fewer colors and frames', audio: 'bitrate budget', pdf: 'Ghostscript ebook', other: 'zip, then split', fits: 'already fits', parts: (n) => n + ' parts' },
-    ru: { win: 'Скачать для Windows', linux: 'Скачать для Linux', video: 'подбор битрейта, до 1080p', image: 'подбор качества и размера', gif: 'меньше цветов и кадров', audio: 'бюджет битрейта', pdf: 'Ghostscript ebook', other: 'zip, потом части', fits: 'уже влезает', parts: (n) => n + plural(n) },
-  };
-  let lang = 'en';
-  try { lang = localStorage.getItem('morph.lang') || ''; } catch (e) { lang = ''; }
-  if (lang !== 'en' && lang !== 'ru') lang = /^(ru|uk|be|kk)/i.test(navigator.language || '') ? 'ru' : 'en';
-  const q = new URLSearchParams(location.search).get('lang');
-  if (q === 'en' || q === 'ru') lang = q;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REPO = 'kabiriyer3-cmyk/morph';
 
-  function setLang(l) {
-    lang = l;
-    document.documentElement.lang = l;
-    try { localStorage.setItem('morph.lang', l); } catch (e) { /* private mode */ }
-    const d = l === 'ru' ? RU : EN;
-    $$('[data-i]').forEach((e) => { if (d[e.dataset.i] != null) e.textContent = d[e.dataset.i]; });
-    $$('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.l === l));
-    $('#hero-dl-l').textContent = X[l][linux ? 'linux' : 'win'];
-    share();
-  }
+/* ---------------------------------------------------------------- i18n */
+const T = {
+  en: {
+    'nav.flow': 'Workflow', 'nav.formats': 'Formats', 'nav.get': 'Download', tip: '· drag any node by its header', 'n0': 'Load Files', 'n0.st': 'ready',
+    'hero.p': 'Morph converts, compresses and batch-processes <b>video, images, audio, documents, spreadsheets, 3D and archives</b>. A Converter window for everyday jobs, a node graph for everything else. Free, open source, fully offline.',
+    'cta.dl': 'Download', 'cta.src': 'Source code', h1a: 'Any file.', h1b: 'Any shape.', 's.nodes': 'nodes', 's.prof': 'profiles', 's.fmt': 'formats', 's.up': 'uploads', run: 'Run', 'run.k': 'scroll',
+    n1: 'Convert Anything', 'n1.h': 'Drop in anything. Pick what it becomes.', 'n1.p': 'Pick a target and Morph picks the engine for every file: FFmpeg, LibreOffice, Pandoc or the built-in Rust core.', eng: 'engine',
+    n2: 'Compress for Services', 'n2.h': 'Under the limit. Every file, every time.', 'n2.p': 'Not just video. Photos get a quality search, PDFs Ghostscript, GIFs fewer colors, everything else zip and split into parts.', 'cp.k': 'file',
+    n3: 'Device Profiles', 'n3.h': '81 profiles. Pick a device, done.', 'n3.p': 'The presets you know from Bigasoft and Format Factory. Morph sets the codec, size and frame rate, you keep full manual control.',
+    n4: 'Preview', 'n4.h': 'A Converter for every day. Nodes for the rest.', 'sh.0': 'Converter', 'sh.1': 'Dashboard', 'sh.2': 'Node editor',
+    n5: 'Formats', 'n5.h': 'Point at a format. See where it can go.', 'w.hint': 'hover or tap any format', 'w.to': '{n} formats', 'w.out': 'output format',
+    n6: 'Save', 'n6.h': 'Get Morph.', 'n6.p': 'Windows 10/11 and Linux x64. No account, no telemetry, nothing leaves your computer.', 'd.win': 'Installer .exe', 'd.port': 'Portable', 'd.fine': 'FFmpeg, Pandoc, LibreOffice and 7-Zip install from the app in one click.',
+    'f.rel': 'Releases', 'f.iss': 'Issues', idle: 'idle', running: 'running', fits: 'already fits, kept as is', parts: '{n} parts of {s}',
+    k: { video: 'Video', photo: 'Photo', pdf: 'PDF', folder: 'Folder' },
+    how: { video: 'bitrate fit, 2 pass', photo: ['quality 86', 'quality 72, 4000 px', 'resize to 2560 px'], pdf: ['ebook, 150 dpi', 'screen, 72 dpi'], folder: 'zip' },
+    g: { apple: 'Apple', android: 'Android', console: 'Consoles', tv: 'TV & DVD', web: 'Web & social', edit: 'Editing', hd: 'HD & 4K' },
+    any: 'any file', cmp: 'compress',
+  },
+  ru: {
+    'nav.flow': 'Как работает', 'nav.formats': 'Форматы', 'nav.get': 'Скачать', tip: '· ноды можно таскать за заголовок', 'n0': 'Загрузить файлы', 'n0.st': 'готово',
+    'hero.p': 'Morph конвертирует, сжимает и пакетно обрабатывает <b>видео, картинки, аудио, документы, таблицы, 3D и архивы</b>. Окно конвертера для повседневных задач, нодовый граф для всего остального. Бесплатно, открытый код, полностью офлайн.',
+    'cta.dl': 'Скачать', 'cta.src': 'Исходный код', h1a: 'Любой файл.', h1b: 'Любая форма.', 's.nodes': 'нода', 's.prof': 'профиль', 's.fmt': 'форматов', 's.up': 'загрузок', run: 'Запуск', 'run.k': 'скролл',
+    n1: 'Конвертировать что угодно', 'n1.h': 'Бросьте что угодно. Выберите, чем оно станет.', 'n1.p': 'Вы выбираете формат, Morph выбирает движок для каждого файла: FFmpeg, LibreOffice, Pandoc или встроенное ядро на Rust.', eng: 'движок',
+    n2: 'Сжатие для сервисов', 'n2.h': 'Влезает в лимит. Любой файл, всегда.', 'n2.p': 'Не только видео. Фото получают подбор качества, PDF Ghostscript, GIF меньше цветов, всё остальное zip и деление на части.', 'cp.k': 'файл',
+    n3: 'Профили устройств', 'n3.h': '81 профиль. Выбрал устройство, готово.', 'n3.p': 'Те самые пресеты из Bigasoft и Format Factory. Morph сам ставит кодек, размер и частоту кадров, ручные настройки остаются.',
+    n4: 'Предпросмотр', 'n4.h': 'Конвертер на каждый день. Ноды для всего остального.', 'sh.0': 'Конвертер', 'sh.1': 'Дашборд', 'sh.2': 'Редактор нод',
+    n5: 'Форматы', 'n5.h': 'Наведите на формат. Увидите, во что он превращается.', 'w.hint': 'наведите или нажмите на формат', 'w.to': '{n} форматов', 'w.out': 'формат вывода',
+    n6: 'Сохранить', 'n6.h': 'Скачать Morph.', 'n6.p': 'Windows 10/11 и Linux x64. Без аккаунта и телеметрии, файлы не покидают компьютер.', 'd.win': 'Установщик .exe', 'd.port': 'Портативная', 'd.fine': 'FFmpeg, Pandoc, LibreOffice и 7-Zip ставятся из приложения в один клик.',
+    'f.rel': 'Релизы', 'f.iss': 'Задачи', idle: 'ожидание', running: 'работает', fits: 'уже влезает, без изменений', parts: '{n} частей по {s}',
+    k: { video: 'Видео', photo: 'Фото', pdf: 'PDF', folder: 'Папка' },
+    how: { video: 'подбор битрейта, 2 прохода', photo: ['качество 86', 'качество 72, 4000 px', 'уменьшение до 2560 px'], pdf: ['ebook, 150 dpi', 'screen, 72 dpi'], folder: 'zip' },
+    g: { apple: 'Apple', android: 'Android', console: 'Консоли', tv: 'ТВ и DVD', web: 'Веб и соцсети', edit: 'Монтаж', hd: 'HD и 4K' },
+    any: 'любой файл', cmp: 'сжатие',
+  },
+};
+const qlang = new URLSearchParams(location.search).get('lang');
+let lang = qlang || localStorage.getItem('morph.lang') || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
+if (!T[lang]) lang = 'en';
+const L = () => T[lang];
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+const hooks = [];
+function applyLang() {
+  document.documentElement.lang = lang;
+  $$('[data-t]').forEach((e) => { const v = L()[e.dataset.t]; if (typeof v === 'string') e.textContent = v; });
+  $$('[data-th]').forEach((e) => { const v = L()[e.dataset.th]; if (v) e.innerHTML = v; });
+  $$('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === lang));
+  hooks.forEach((f) => f());
+  relayout();
+}
+$$('.lang button').forEach((b) => b.onclick = () => { lang = b.dataset.lang; localStorage.setItem('morph.lang', lang); applyLang(); });
 
-  // 3D dot field: a wavy plane of points in perspective, follows the pointer a little.
-  const cv = $('#field');
-  const g = cv.getContext('2d');
-  const P = [];
-  for (let i = 0; i < 96; i++) for (let j = 0; j < 56; j++) P.push([(i / 95) * 2 - 1, (j / 55) * 2 - 1]);
-  let W = 0, H = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true;
-  function size() {
-    const d = Math.min(2, window.devicePixelRatio || 1);
-    W = cv.clientWidth; H = cv.clientHeight;
-    cv.width = W * d; cv.height = H * d;
-    g.setTransform(d, 0, 0, d, 0, 0);
-  }
-  function draw(ms) {
-    const t = (ms || 0) / 1000;
-    mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;
-    g.clearRect(0, 0, W, H);
-    const ry = -0.28 + mx * 0.3, rx = 0.5 + my * 0.08;
-    const cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx), f = Math.max(W, H) * 0.62;
-    for (const [a, b] of P) {
-      const x = a * 2.7, z = b * 2.1;
-      const y = Math.sin(x * 1.5 + t * 0.7) * 0.2 + Math.cos(z * 1.9 - t * 0.5) * 0.14 + Math.sin((x - z) * 2.4 + t) * 0.05;
-      const X0 = x * cy - z * sy, Z0 = x * sy + z * cy;
-      const Y = -y * cx - Z0 * sx, Z = -y * sx + Z0 * cx + 3.4;
-      if (Z < 0.4) continue;
-      const p = f / Z, px = W / 2 + X0 * p, py = H * 0.6 + Y * p;
-      if (px < 0 || px > W || py < 0 || py > H) continue;
-      const near = Math.min(1, Math.max(0, (5.4 - Z) / 3.2));
-      const h = Math.min(1, Math.max(0, (y + 0.3) / 0.6));
-      const r = 0.7 + near * 1.7;
-      g.globalAlpha = 0.05 + near * 0.6 * (0.4 + h * 0.6);
-      g.fillStyle = h > 0.64 ? '#e3eaff' : h > 0.36 ? '#8fb0ff' : '#3b7bff';
-      g.fillRect(px - r / 2, py - r / 2, r, r);
+/* ---------------------------------------------------------------- icons */
+const IC = {
+  files: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>',
+  convert: '<path d="M4 9h13l-4-4M20 15H7l4 4"/>',
+  send: '<path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5L3 9.5Z"/>',
+  phone: '<rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18h2"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+  grid: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  save: '<path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5Z" fill="currentColor"/>',
+};
+$$('[data-i]').forEach((e) => e.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[e.dataset.i]}</svg>`);
+
+/* ---------------------------------------------------------------- scramble */
+const GLY = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._/';
+function scramble(el, text, ms = 520) {
+  if (RM) { el.textContent = text; return; }
+  const from = el.textContent;
+  const n = Math.max(from.length, text.length);
+  const t0 = performance.now();
+  cancelAnimationFrame(el._sc);
+  const step = (now) => {
+    const p = Math.min(1, (now - t0) / ms);
+    let s = '';
+    for (let i = 0; i < n; i++) {
+      const lim = (i / n) * 0.7 + 0.3;
+      if (p >= lim) s += text[i] || '';
+      else if (p > lim - 0.35) s += text[i] === ' ' ? ' ' : GLY[(Math.random() * GLY.length) | 0];
+      else s += from[i] || '';
     }
-    g.globalAlpha = 1;
-    if (!RM && vis) requestAnimationFrame(draw);
-  }
-  size();
-  addEventListener('resize', size);
-  addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
-  new IntersectionObserver(([e]) => {
-    const was = vis;
-    vis = e.isIntersecting;
-    if (vis && !was && !RM) requestAnimationFrame(draw);
-  }).observe($('.hero'));
-  requestAnimationFrame(draw);
-
-  // reveal on scroll, count-up numbers
-  const count = (root) => $$('[data-count]', root).forEach((e) => {
-    const n = +e.dataset.count, plus = e.hasAttribute('data-plus') ? '+' : '', t0 = performance.now();
-    if (RM) return;
-    const step = (now) => {
-      const k = Math.min(1, (now - t0) / 1400);
-      e.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))) + (k === 1 ? plus : '');
-      if (k < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  });
-  let shareSeen = false;
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('seen');
-    io.unobserve(e.target);
-    if (e.target.classList.contains('stats')) count(e.target);
-    if (e.target.id === 'panel') { shareSeen = true; setTimeout(share, 250); }
-  }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-  $$('.rv').forEach((e) => io.observe(e));
-
-  // screenshot: tabs, auto rotation, tilt that flattens on scroll
-  const imgs = $$('.scr img'), tabs = $$('.tabs button');
-  let cur = 0;
-  const show = (i) => { cur = i; imgs.forEach((m, j) => m.classList.toggle('on', j === i)); tabs.forEach((b, j) => b.classList.toggle('on', j === i)); };
-  imgs.forEach((m) => { m.onerror = () => { m.onerror = null; m.src = 'dashboard.png'; }; });
-  const auto = setInterval(() => show((cur + 1) % imgs.length), 5200);
-  tabs.forEach((b, i) => b.addEventListener('click', () => { clearInterval(auto); show(i); }));
-  const fr = $('#frame');
-  const tilt = () => {
-    const r = fr.getBoundingClientRect();
-    const k = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.8)));
-    fr.style.transform = `rotateX(${((1 - k) * 24).toFixed(2)}deg) scale(${(0.9 + 0.1 * k).toFixed(3)})`;
+    el.textContent = s;
+    if (p < 1) el._sc = requestAnimationFrame(step);
   };
-  if (!RM) { addEventListener('scroll', tilt, { passive: true }); tilt(); }
+  el._sc = requestAnimationFrame(step);
+}
 
-  // formats marquee
-  const F1 = 'MP4 MKV WebM MOV AVI HEVC AV1 ProRes MPEG-2 GIF MP3 FLAC WAV Opus M4A AAC OGG AC-3 ALAC M4R'.split(' ');
-  const F2 = 'PNG JPG WebP AVIF TIFF BMP ICO SVG PDF DOCX ODT PPTX XLSX ODS CSV JSON YAML EPUB GLB OBJ STL ZIP 7Z'.split(' ');
-  [[F1, '#mq1'], [F2, '#mq2']].forEach(([a, s]) => { $(s).innerHTML = [...a, ...a].map((x) => `<span>${x}</span>`).join(''); });
-
-  // edit tools highlight one by one
-  const ed = $$('#edits span');
-  let ei = 0;
-  if (!RM) setInterval(() => { ed.forEach((e, i) => e.classList.toggle('on', i === ei)); ei = (ei + 1) % ed.length; }, 1100);
-
-  // spotlight on cards
-  $$('.card').forEach((c) => c.addEventListener('pointermove', (e) => {
-    const r = c.getBoundingClientRect();
-    c.style.setProperty('--mx', e.clientX - r.left + 'px');
-    c.style.setProperty('--my', e.clientY - r.top + 'px');
-  }));
-
-  // Compress for services demo
-  const SV = [['Discord', 10], ['Nitro Basic', 50], ['Discord Nitro', 500], ['Telegram', 2000], ['WhatsApp', 16], ['Gmail', 25], ['Outlook', 20], ['Slack', 1000], ['Signal', 100]];
-  const FL = [['gameplay.mp4', 'video', 'i-film', 184], ['IMG_2041.png', 'image', 'i-image', 24.6], ['reaction.gif', 'gif', 'i-gif', 38], ['podcast.wav', 'audio', 'i-audio', 92], ['report.pdf', 'pdf', 'i-doc', 31], ['project.zip', 'other', 'i-zip', 140]];
-  let sv = 0;
-  const mb = (v) => (v >= 1000 ? +(v / 1000).toFixed(1) + ' GB' : (v < 10 ? v.toFixed(1) : Math.round(v)) + ' MB');
-  function share() {
-    const box = $('#svc'), rows = $('#rows');
-    if (!box.childElementCount) box.innerHTML = SV.map((s, i) => `<button data-v="${i}">${s[0]}<b>${mb(s[1])}</b></button>`).join('');
-    $$('button', box).forEach((b, i) => b.classList.toggle('on', i === sv));
-    const [name, lim] = SV[sv], L = X[lang];
-    $('#svc-name').textContent = name;
-    $('#svc-lim').textContent = mb(lim);
-    if (!rows.childElementCount) rows.innerHTML = FL.map(([n, , ic]) => `<div class="row"><span class="k"><svg class="ico"><use href="#${ic}"/></svg></span><div><div class="nm"><span>${n}</span><small></small></div><div class="bar"><i></i></div></div><div class="sz"><s></s><span></span></div></div>`).join('');
-    $$('.row', rows).forEach((r, i) => {
-      const [, k, , size] = FL[i];
-      const fits = size <= lim;
-      let after = size, note = L.fits, out;
-      if (!fits && k === 'other') {
-        const n = Math.ceil(size / (lim * 0.96));
-        after = size / n; note = L.parts(n) + ' · ' + L.other; out = n + ' × ' + mb(after);
-      } else if (!fits) {
-        after = lim * (0.84 + (i % 3) * 0.04); note = L[k];
-      }
-      r.classList.toggle('fit', fits);
-      $('small', r).textContent = note;
-      $('s', r).textContent = fits ? '' : mb(size);
-      $('.sz span', r).textContent = out || mb(after);
-      $('.bar i', r).style.width = shareSeen ? Math.max(2, (after / size) * 100) + '%' : '100%';
-    });
+/* ---------------------------------------------------------------- 3D dots */
+const cv = $('#dots');
+const cx2 = cv.getContext('2d');
+const N = innerWidth < 760 ? 1100 : 2000;
+const P = new Float32Array(N * 3), A = new Float32Array(N * 3), B = new Float32Array(N * 3);
+const DEL = new Float32Array(N), ACC = new Uint8Array(N), PH = new Float32Array(N);
+for (let i = 0; i < N; i++) { DEL[i] = Math.random() * 0.4; ACC[i] = Math.random() < 0.055 ? 1 : 0; PH[i] = Math.random() * 6.28; }
+const rnd = Math.random;
+function lines(o, segs) {
+  let tot = 0;
+  const ls = segs.map((s) => { const l = Math.hypot(s[3] - s[0], s[4] - s[1], s[5] - s[2]); tot += l; return l; });
+  let i = 0;
+  segs.forEach((s, j) => {
+    const c = j === segs.length - 1 ? N - i : Math.round((ls[j] / tot) * N);
+    for (let k = 0; k < c && i < N; k++, i++) {
+      const t = (k + rnd() * 0.5) / Math.max(1, c);
+      o[i * 3] = s[0] + (s[3] - s[0]) * t; o[i * 3 + 1] = s[1] + (s[4] - s[1]) * t; o[i * 3 + 2] = s[2] + (s[5] - s[2]) * t;
+    }
+  });
+  for (; i < N; i++) o[i * 3] = o[i * 3 + 1] = o[i * 3 + 2] = 0;
+}
+const rect = (x, y, z, w, h) => [[x, y, z, x + w, y, z], [x + w, y, z, x + w, y + h, z], [x + w, y + h, z, x, y + h, z], [x, y + h, z, x, y, z]];
+const SH = {
+  sphere(o) { const g = Math.PI * (3 - Math.sqrt(5)); for (let i = 0; i < N; i++) { const y = 1 - (2 * (i + 0.5)) / N, r = Math.sqrt(1 - y * y), t = g * i; o[i * 3] = Math.cos(t) * r; o[i * 3 + 1] = y; o[i * 3 + 2] = Math.sin(t) * r; } },
+  dense(o) { for (let i = 0; i < N; i++) { const u = rnd() * 2 - 1, t = rnd() * 6.283, r = 0.34 * Math.cbrt(rnd()), q = Math.sqrt(1 - u * u); o[i * 3] = Math.cos(t) * q * r; o[i * 3 + 1] = u * r; o[i * 3 + 2] = Math.sin(t) * q * r; } },
+  cube(o) { const n = Math.ceil(Math.sqrt(N / 6)), s = 0.7; for (let i = 0; i < N; i++) { const f = i % 6, k = (i / 6) | 0, a = ((((k % n) + 0.5) / n) * 2 - 1) * s, b = (((((k / n) | 0) % n + 0.5) / n) * 2 - 1) * s; const v = [[s, a, b], [-s, a, b], [a, s, b], [a, -s, b], [a, b, s], [a, b, -s]][f]; o[i * 3] = v[0]; o[i * 3 + 1] = v[1]; o[i * 3 + 2] = v[2]; } },
+  torus(o) { const n1 = Math.round(Math.sqrt(N * 2.6)), n2 = Math.ceil(N / n1); for (let i = 0; i < N; i++) { const u = ((i % n1) / n1) * 6.283, v = (((i / n1) | 0) / n2) * 6.283, R = 0.72, r = 0.28; o[i * 3] = (R + r * Math.cos(v)) * Math.cos(u); o[i * 3 + 1] = r * Math.sin(v); o[i * 3 + 2] = (R + r * Math.cos(v)) * Math.sin(u); } },
+  film(o) {
+    const s = [...rect(-1, -0.62, 0, 2, 1.24), ...rect(-0.82, -0.44, 0, 1.64, 0.88)];
+    for (let k = 0; k < 9; k++) { const x = -0.9 + k * 0.2; s.push(...rect(x, -0.57, 0, 0.08, 0.07), ...rect(x, 0.5, 0, 0.08, 0.07)); }
+    s.push([-0.17, -0.26, 0, -0.17, 0.26, 0], [-0.17, 0.26, 0, 0.27, 0, 0], [0.27, 0, 0, -0.17, -0.26, 0], [-0.08, -0.12, 0, -0.08, 0.12, 0], [-0.08, 0.12, 0, 0.12, 0, 0], [0.12, 0, 0, -0.08, -0.12, 0]);
+    lines(o, s);
+  },
+  grid(o) { const s = []; for (let c = 0; c <= 5; c++) s.push([-0.95 + c * 0.38, -0.66, 0, -0.95 + c * 0.38, 0.66, 0]); for (let r = 0; r <= 6; r++) s.push([-0.95, -0.66 + r * 0.22, 0, 0.95, -0.66 + r * 0.22, 0]); s.push([-0.95, 0.47, 0.001, 0.95, 0.47, 0.001], [-0.95, 0.5, 0, 0.95, 0.5, 0], [-0.95, 0.53, 0, 0.95, 0.53, 0], [-0.95, 0.56, 0, 0.95, 0.56, 0], [-0.95, 0.59, 0, 0.95, 0.59, 0]); lines(o, s); },
+  wave(o) { const s = []; for (let k = 0; k <= 32; k++) { const x = -1 + k / 16, h = 0.1 + 0.62 * Math.abs(Math.sin(x * 3.3) * Math.cos(x * 1.4)) + 0.08 * Math.sin(k * 7.1) ** 2, z = Math.sin(x * 2) * 0.18; s.push([x, -h, z, x, h, z]); } lines(o, s); },
+  pages(o) { const s = []; for (let p = 2; p >= 0; p--) s.push(...rect(-0.5 + p * 0.13, -0.7 - p * 0.09, -p * 0.16, 1, 1.36)); for (let k = 0; k < 7; k++) s.push([-0.36, -0.44 + k * 0.15, 0, k === 0 ? 0.1 : 0.36 - (k % 3) * 0.1, -0.44 + k * 0.15, 0]); lines(o, s); },
+};
+const SEQ = [['sphere', () => L().any], ['film', '.mov → .mp4'], ['dense', '148 MB → 9.6 MB'], ['grid', '.xlsx → .csv'], ['wave', '.wav → .mp3'], ['cube', '.obj → .glb'], ['pages', '.docx → .pdf'], ['torus', '.mp4 → .gif']];
+let si = 0, mt0 = 0, morphing = false;
+SH.sphere(P); A.set(P); B.set(P);
+const shapeT = $('#shape-t');
+const lab = (k) => { const v = SEQ[k][1]; return typeof v === 'function' ? v() : v; };
+hooks.push(() => { shapeT.textContent = lab(si); });
+function nextShape(now) {
+  si = (si + 1) % SEQ.length;
+  A.set(P); SH[SEQ[si][0]](B);
+  mt0 = now; morphing = true;
+  scramble(shapeT, lab(si), 700);
+}
+let W = 0, H = 0, DPR = 1, CX = 0, CY = 0, RPX = 0, rotY = 0.9, tilt = -0.26, mx = 0, my = 0, tmx = 0, tmy = 0, px = -9999, py = -9999, heroOn = true, last = 0, hold = 0;
+function sizeDots() {
+  const r = cv.getBoundingClientRect();
+  DPR = Math.min(2, devicePixelRatio || 1);
+  W = r.width; H = r.height;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  const narrow = innerWidth < 760;
+  CX = narrow ? W * 0.5 : W * 0.66; CY = narrow ? H * 0.5 : H * 0.45;
+  RPX = Math.min(W * (narrow ? 0.4 : 0.32), H * (narrow ? 0.36 : 0.38));
+  const sh = $('#shape');
+  sh.style.left = (cv.offsetLeft + CX) + 'px';
+  sh.style.top = (cv.offsetTop + CY + (narrow ? RPX * 1.12 : -RPX * 1.18 - 28)) + 'px';
+}
+const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const BK = 6;
+const buckets = Array.from({ length: BK * 2 }, () => []);
+function drawDots(now) {
+  if (!last) last = now;
+  const dt = Math.min(50, now - last); last = now;
+  if (morphing) {
+    const t = (now - mt0) / 1500;
+    let all = true;
+    for (let i = 0; i < N; i++) {
+      let p = (t - DEL[i]) / 0.6; if (p < 1) all = false; p = p < 0 ? 0 : p > 1 ? 1 : p;
+      const e = ease(p), j = i * 3;
+      P[j] = A[j] + (B[j] - A[j]) * e; P[j + 1] = A[j + 1] + (B[j + 1] - A[j + 1]) * e; P[j + 2] = A[j + 2] + (B[j + 2] - A[j + 2]) * e;
+    }
+    if (all) { morphing = false; hold = now; }
+  } else if (!RM && now - hold > 2300) nextShape(now);
+  mx += (tmx - mx) * 0.05; my += (tmy - my) * 0.05;
+  rotY += dt * 0.00042;
+  const ay = Math.sin(rotY) * 0.62 + mx * 0.5, ax = tilt + Math.sin(rotY * 0.7) * 0.12 + my * 0.3;
+  const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax);
+  cx2.setTransform(DPR, 0, 0, DPR, 0, 0);
+  cx2.clearRect(0, 0, W, H);
+  for (const b of buckets) b.length = 0;
+  const F = 3.2, tt = now * 0.0012;
+  for (let i = 0; i < N; i++) {
+    const j = i * 3, w = Math.sin(tt + PH[i]) * 0.008;
+    const x = P[j] + w, y = P[j + 1] - w, z = P[j + 2];
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+    const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+    const s = F / (F + z2);
+    let X = CX + x1 * RPX * s, Y = CY - y1 * RPX * s;
+    const dx = X - px, dy = Y - py, d2 = dx * dx + dy * dy;
+    if (d2 < 12000) { const d = Math.sqrt(d2) || 1, f = (1 - d / 110) * 16; X += (dx / d) * f; Y += (dy / d) * f; }
+    const dep = Math.min(1, Math.max(0, (1.25 - z2) / 2.5));
+    const k = Math.min(BK - 1, (dep * BK) | 0);
+    buckets[k + (ACC[i] ? BK : 0)].push(X, Y, 0.7 + s * 0.9 * dep + 0.35);
   }
-  $('#svc').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { sv = +b.dataset.v; share(); } });
+  for (let b = 0; b < BK * 2; b++) {
+    const arr = buckets[b]; if (!arr.length) continue;
+    const a = 0.12 + ((b % BK) / (BK - 1)) * 0.88;
+    cx2.fillStyle = b >= BK ? `rgba(74,140,255,${Math.min(1, a + 0.1)})` : `rgba(244,244,245,${a})`;
+    cx2.beginPath();
+    for (let i = 0; i < arr.length; i += 3) { const r = arr[i + 2]; cx2.rect(arr[i] - r / 2, arr[i + 1] - r / 2, r, r); }
+    cx2.fill();
+  }
+}
+const hero = $('.hero');
+hero.addEventListener('pointermove', (e) => {
+  const r = cv.getBoundingClientRect();
+  px = e.clientX - r.left; py = e.clientY - r.top;
+  tmx = (e.clientX / innerWidth - 0.5) * 2; tmy = (e.clientY / innerHeight - 0.5) * 2;
+});
+hero.addEventListener('pointerleave', () => { px = py = -9999; tmx = tmy = 0; });
+new IntersectionObserver((es) => { heroOn = es[0].isIntersecting; }, { threshold: 0 }).observe(hero);
 
-  // downloads from the latest GitHub release
-  const A = { exe: /-setup\.exe$/i, msi: /\.msi$/i, port: /portable\.exe$/i, appimage: /\.appimage$/i, deb: /\.deb$/i, rpm: /\.rpm$/i };
-  $$('[data-a]').forEach((a) => (a.href = REL));
-  $(linux ? '#os-linux' : '#os-win').classList.add('cur');
-  $('#hero-dl use').setAttribute('href', linux ? '#i-down' : '#i-win');
-  fetch('https://api.github.com/repos/' + REPO + '/releases/latest')
-    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-    .then((rel) => {
-      $$('.ver').forEach((e) => (e.textContent = rel.tag_name));
-      $$('[data-a]').forEach((a) => {
-        const x = (rel.assets || []).find((f) => A[a.dataset.a].test(f.name));
-        if (!x) return;
-        a.href = x.browser_download_url;
-        const s = $('small', a);
-        if (s) s.textContent = (x.size / 1048576).toFixed(1) + ' MB';
-      });
-      $('#hero-dl').href = $(linux ? '[data-a=appimage]' : '[data-a=exe]').href;
-    })
-    .catch(() => {});
+/* ---------------------------------------------------------------- wires */
+const svg = $('#wires'), base = $('#w-base'), flow = $('#w-flow'), lives = $('#w-lives'), masks = $('#w-masks'), headC = $('#w-head'), ringC = $('#w-ring');
+const NS = 'http://www.w3.org/2000/svg';
+const nodes = $$('.node');
+let segs = [], dirty = true, scrolled = true;
+const sp = (el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2 + scrollX, y: r.top + r.height / 2 + scrollY }; };
+function relayout() { dirty = true; }
+function layout() {
+  dirty = false;
+  const Wd = document.documentElement.clientWidth, Hd = document.documentElement.scrollHeight;
+  svg.setAttribute('width', Wd); svg.setAttribute('height', Hd); svg.setAttribute('viewBox', `0 0 ${Wd} ${Hd}`);
+  const narrow = innerWidth < 760;
+  let all = '';
+  const fresh = [];
+  for (let i = 0; i < nodes.length - 1; i++) {
+    const so = nodes[i].querySelector('.sock.out'), si2 = nodes[i + 1].querySelector('.sock.in');
+    if (!so || !si2) continue;
+    const o = sp(so), n = sp(si2);
+    let d;
+    if (narrow) { const g = Math.max(8, Math.min(o.x, n.x) - 0); d = `M${o.x} ${o.y}C${o.x + 40} ${o.y + 60} ${g - 40} ${n.y - 90} ${n.x} ${n.y}`; }
+    else {
+      const dx = Math.max(90, Math.min(380, Math.abs(n.x - o.x) * 0.45 + (n.y - o.y) * 0.2));
+      d = `M${o.x} ${o.y}C${Math.min(Wd - 12, o.x + dx)} ${o.y} ${Math.max(12, n.x - dx)} ${n.y} ${n.x} ${n.y}`;
+    }
+    all += d;
+    fresh.push({ d, y0: o.y, y1: n.y, node: nodes[i + 1] });
+  }
+  base.setAttribute('d', all); flow.setAttribute('d', all);
+  while (lives.children.length < fresh.length) { lives.append(document.createElementNS(NS, 'path')); masks.append(document.createElementNS(NS, 'path')); }
+  fresh.forEach((s, i) => {
+    const lp = lives.children[i], mp = masks.children[i];
+    lp.setAttribute('class', 'w-live'); lp.setAttribute('d', s.d);
+    mp.setAttribute('d', s.d); mp.setAttribute('stroke', '#fff'); mp.setAttribute('stroke-width', '10'); mp.setAttribute('fill', 'none');
+    s.el = lp; s.mk = mp; s.len = lp.getTotalLength();
+    lp.style.strokeDasharray = mp.style.strokeDasharray = `${s.len} ${s.len + 10}`;
+  });
+  segs = fresh;
+  scrolled = true;
+}
+function lenAtY(s, y) { let lo = 0, hi = s.len; for (let k = 0; k < 16; k++) { const m = (lo + hi) / 2; if (s.el.getPointAtLength(m).y < y) lo = m; else hi = m; } return lo; }
+function setState(node, on) {
+  const st = node.querySelector('.stt');
+  if (on && !node._on) {
+    node._on = true; node.classList.add('live'); if (st) st.textContent = L().running;
+    clearTimeout(node._t);
+    node._t = setTimeout(() => { node.classList.add('done'); if (st) st.textContent = '✓ ' + (node._ms || (node._ms = (0.18 + Math.random() * 1.3).toFixed(2))) + ' s'; }, 720);
+  } else if (!on && node._on) {
+    node._on = false; clearTimeout(node._t); node.classList.remove('live', 'done'); if (st) st.textContent = L().idle;
+  }
+}
+hooks.push(() => nodes.forEach((n) => { const st = n.querySelector('.stt'); if (st && !n._on) st.textContent = L().idle; }));
+function drawWires() {
+  scrolled = false;
+  const hy = scrollY + innerHeight * 0.64;
+  let hp = null;
+  for (const s of segs) {
+    let f;
+    if (hy <= s.y0) f = 0; else if (hy >= s.y1) f = s.len; else { f = lenAtY(s, hy); hp = s.el.getPointAtLength(f); }
+    if (RM) f = s.len;
+    const off = s.len - f;
+    s.el.style.strokeDashoffset = off; s.mk.style.strokeDashoffset = off;
+    setState(s.node, RM || hy >= s.y1);
+  }
+  if (hp && !RM) { headC.setAttribute('cx', hp.x); headC.setAttribute('cy', hp.y); ringC.setAttribute('cx', hp.x); ringC.setAttribute('cy', hp.y); headC.setAttribute('opacity', 1); ringC.setAttribute('opacity', 1); }
+  else { headC.setAttribute('opacity', 0); ringC.setAttribute('opacity', 0); }
+}
+addEventListener('scroll', () => { scrolled = true; }, { passive: true });
+addEventListener('resize', () => { sizeDots(); relayout(); });
+new ResizeObserver(relayout).observe(document.body);
+document.addEventListener('transitionend', (e) => { if (e.target.classList && e.target.classList.contains('node')) relayout(); });
+addEventListener('load', relayout);
 
-  $$('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.l)));
-  setLang(lang);
+/* node dragging */
+nodes.forEach((node) => {
+  const h = node.querySelector('.nh');
+  let sx, sy, bx = 0, by = 0, on = false;
+  h.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    on = true; sx = e.clientX; sy = e.clientY;
+    const m = (node.style.translate || '0px 0px').split(' ');
+    bx = parseFloat(m[0]) || 0; by = parseFloat(m[1]) || 0;
+    node.classList.add('drag'); h.setPointerCapture(e.pointerId);
+  });
+  h.addEventListener('pointermove', (e) => {
+    if (!on) return;
+    const lim = innerWidth * 0.3;
+    const x = Math.max(-lim, Math.min(lim, bx + e.clientX - sx)), y = Math.max(-160, Math.min(160, by + e.clientY - sy));
+    node.style.translate = `${x}px ${y}px`; relayout();
+  });
+  const end = () => { if (!on) return; on = false; node.classList.remove('drag'); relayout(); };
+  h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
+  h.addEventListener('dblclick', () => { node.style.translate = ''; relayout(); });
+});
+
+/* reveal */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.remove('rv'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+$$('.node.rv').forEach((n) => io.observe(n));
+
+$('#run').onclick = () => $('#convert').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
+
+/* ---------------------------------------------------------------- convert demo */
+const CVT = [
+  ['MP4', 'trip.mp4', 'H.264 + AAC · 1080p · 41 MB', 'FFmpeg'], ['WebM', 'trip.webm', 'VP9 + Opus · 1080p · 33 MB', 'FFmpeg'], ['GIF', 'trip.gif', '480 px · 12 fps · 7.8 MB', 'FFmpeg + palette'],
+  ['MP3', 'trip.mp3', '192 kbps · 3:12 · 4.4 MB', 'FFmpeg'], ['iPhone', 'trip.mp4', 'HEVC · 4K · 60 fps · 58 MB', 'FFmpeg · profile'], ['PNG', 'trip_%04d.png', '96 frames · 1920×1080', 'FFmpeg'], ['AV1', 'trip.webm', 'AV1 · 1080p · 22 MB', 'FFmpeg · libsvtav1'],
+];
+const cvT = $('#cv-t'), cvOut = $('#cv-out'), cvRes = $('#cv-res'), cvBar = $('#cv-bar'), cvEng = $('#cv-eng');
+let cvI = 0, cvAuto = true;
+CVT.forEach((c, i) => { const b = document.createElement('button'); b.className = 'pill' + (i ? '' : ' on'); b.textContent = c[0]; b.onclick = () => { cvAuto = false; pickCv(i); }; cvT.append(b); });
+function pickCv(i) {
+  cvI = i; const c = CVT[i];
+  [...cvT.children].forEach((b, k) => b.classList.toggle('on', k === i));
+  scramble(cvOut, c[1]); scramble(cvRes, c[2], 650); cvEng.textContent = c[3];
+  cvBar.style.transition = 'none'; cvBar.style.width = '0';
+  requestAnimationFrame(() => requestAnimationFrame(() => { cvBar.style.transition = 'width .9s cubic-bezier(.2,.8,.2,1)'; cvBar.style.width = '100%'; }));
+}
+setInterval(() => { if (cvAuto && document.visibilityState === 'visible' && isOn('#convert')) pickCv((cvI + 1) % CVT.length); }, 2600);
+
+/* ---------------------------------------------------------------- compress demo */
+const SV = [['Discord', 10], ['Nitro Basic', 50], ['WhatsApp', 16], ['Gmail', 25], ['Telegram', 2000]];
+const KS = [['video', 148], ['photo', 18.4], ['pdf', 64], ['folder', 230]];
+let sI = 0, kI = 0, cpAuto = true;
+const mb = (v) => (v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + ' GB' : (v >= 100 ? Math.round(v) : v >= 10 ? v.toFixed(1) : v.toFixed(2).replace(/0$/, '')) + ' MB');
+function cpBuild() {
+  const s = $('#cp-s'), k = $('#cp-k');
+  s.textContent = ''; k.textContent = '';
+  SV.forEach((v, i) => { const b = document.createElement('button'); b.className = 'pill' + (i === sI ? ' on' : ''); b.innerHTML = `${v[0]} <small>${mb(v[1])}</small>`; b.onclick = () => { cpAuto = false; sI = i; cpRun(); }; s.append(b); });
+  KS.forEach((v, i) => { const b = document.createElement('button'); b.className = i === kI ? 'on' : ''; b.textContent = L().k[v[0]]; b.onclick = () => { cpAuto = false; kI = i; cpRun(); }; k.append(b); });
+}
+function cpRun() {
+  [...$('#cp-s').children].forEach((b, i) => b.classList.toggle('on', i === sI));
+  [...$('#cp-k').children].forEach((b, i) => b.classList.toggle('on', i === kI));
+  const lim = SV[sI][1], [kind, size] = KS[kI], cap = lim * 0.96, H = L().how;
+  let out = size, how = '';
+  if (size <= lim) { out = size; how = L().fits; }
+  else if (kind === 'video') { out = cap * (0.97 + Math.random() * 0.02); how = H.video; }
+  else if (kind === 'photo') { const f = [0.55, 0.3, 0.12]; let j = f.findIndex((x) => size * x <= cap); if (j < 0) j = 2; out = size * f[j]; how = H.photo[j]; }
+  else if (kind === 'pdf') { const f = [0.38, 0.12]; let j = f.findIndex((x) => size * x <= cap); if (j < 0) { const z = size * 0.12; const n = Math.ceil(z / cap); out = z / n; how = H.pdf[1] + ' · ' + fmt(L().parts, { n, s: mb(out) }); } else { out = size * f[j]; how = H.pdf[j]; } }
+  else { const z = size * 0.72; if (z <= cap) { out = z; how = H.folder; } else { const n = Math.ceil(z / cap); out = z / n; how = H.folder + ' · ' + fmt(L().parts, { n, s: mb(out) }); } }
+  const sc = (v) => Math.sqrt(Math.min(v, size) / size) * 100;
+  $('#cp-res').style.width = sc(out) + '%';
+  const lp = Math.min(100, sc(lim));
+  $('#cp-lim').style.left = lp + '%';
+  $('#cp-lim').style.opacity = lim >= size ? 0.35 : 1;
+  $('#cp-lt').textContent = mb(lim);
+  $('#cp-sz').textContent = mb(size);
+  scramble($('#cp-num'), `${mb(size)} → ${mb(out)}`, 600);
+  $('#cp-how').textContent = how;
+}
+hooks.push(() => { cpBuild(); cpRun(); });
+setInterval(() => { if (cpAuto && document.visibilityState === 'visible' && isOn('#compress')) { kI = (kI + 1) % KS.length; if (!kI) sI = (sI + 1) % 3; cpRun(); } }, 2800);
+
+/* ---------------------------------------------------------------- profiles drum */
+const PR = [
+  ['iPhone (4K, HEVC)', 'apple'], ['iPad Pro (4K)', 'apple'], ['Apple TV 4K', 'apple'], ['Final Cut Pro (ProRes)', 'edit'], ['Samsung Galaxy (4K)', 'android'], ['Google Pixel (1080p)', 'android'], ['Xiaomi / Redmi / POCO', 'android'],
+  ['PlayStation 5 (4K)', 'console'], ['Xbox Series X|S', 'console'], ['Nintendo Switch', 'console'], ['Steam Deck', 'console'], ['PSP', 'console'], ['Smart TV 4K (HEVC)', 'tv'], ['Chromecast / Google TV', 'tv'], ['Roku / Fire TV', 'tv'],
+  ['DVD video PAL', 'tv'], ['VCD NTSC', 'tv'], ['YouTube 4K', 'web'], ['Reels / TikTok / Shorts', 'web'], ['Instagram feed (4:5)', 'web'], ['Telegram (streamable)', 'web'], ['Full HD 1080p (HEVC)', 'hd'], ['AVCHD / M2TS', 'hd'],
+  ['Avid DNxHR HQ', 'edit'], ['Lossless FFV1 (MKV)', 'edit'], ['AV1 WebM (smallest)', 'web'], ['Android tablet', 'android'], ['Huawei / Honor', 'android'], ['PlayStation 4', 'console'], ['Xbox 360', 'console'],
+];
+const drum = $('#drum'), drG = $('#dr-g'), drN = $('#dr-n');
+const items = PR.map((p) => { const d = document.createElement('div'); d.textContent = p[0]; drum.append(d); return d; });
+let dPos = 0, dVel = 0.0009, dShown = -1;
+function drawDrum(dt) {
+  const r = drum.getBoundingClientRect();
+  const prog = (innerHeight - r.top) / (innerHeight + r.height);
+  dPos += dt * dVel + 0;
+  const pos = dPos + prog * 9;
+  const n = items.length;
+  items.forEach((el, i) => {
+    let off = ((i - pos) % n + n) % n; if (off > n / 2) off -= n;
+    const a = Math.abs(off);
+    if (a > 3.2) { el.style.opacity = 0; return; }
+    el.style.opacity = String(Math.max(0, 1 - a * 0.3));
+    el.style.transform = `translateY(${off * 46}px) rotateX(${-off * 17}deg) scale(${1 - a * 0.08})`;
+    el.style.color = a < 0.5 ? '#fff' : 'rgba(255,255,255,.55)';
+  });
+  const c = ((Math.round(pos) % n) + n) % n;
+  if (c !== dShown) { dShown = c; drG.textContent = L().g[PR[c][1]]; drN.textContent = String((c * 3) % 81 + 1).padStart(2, '0'); }
+}
+hooks.push(() => { dShown = -1; });
+
+/* ---------------------------------------------------------------- preview tabs */
+const shots = $$('.shot img');
+let shI = 0, shAuto = true;
+const pickShot = (i) => { shI = i; shots.forEach((im, k) => im.classList.toggle('on', k === i)); $$('#sh-t .pill').forEach((b, k) => b.classList.toggle('on', k === i)); };
+$$('#sh-t .pill').forEach((b) => b.onclick = () => { shAuto = false; pickShot(+b.dataset.s); });
+setInterval(() => { if (shAuto && isOn('#preview')) pickShot((shI + 1) % 3); }, 3600);
+
+/* ---------------------------------------------------------------- formats wall */
+const KD = {
+  video: ['MP4 MKV WEBM MOV AVI M4V FLV WMV MPG TS M2TS 3GP OGV MXF', 'MP4 MKV WEBM MOV AVI M4V FLV WMV MPG TS M2TS 3GP OGV MXF MP3 M4A AAC OPUS OGG FLAC WAV GIF WEBP PNG JPG'],
+  audio: ['MP3 M4A AAC OPUS OGG FLAC WAV ALAC AIFF WMA AC3 AMR M4R M4B', 'MP3 M4A AAC OPUS OGG FLAC WAV ALAC AIFF WMA AC3 AMR M4R M4B MP4 WEBM MKV MOV'],
+  image: ['PNG JPG WEBP AVIF GIF BMP TIFF ICO TGA QOI HEIC JXL PSD SVG DDS EXR', 'PNG JPG WEBP AVIF GIF BMP TIFF ICO TGA QOI PPM EXR PDF MP4'],
+  sheet: ['XLSX XLS ODS CSV TSV', 'XLSX CSV TSV JSON NDJSON YAML HTML MD XML SQL ODS XLS PDF'],
+  doc: ['DOCX DOC ODT RTF PPTX PPT ODP EPUB MD HTML TEX', 'PDF DOCX DOC ODT RTF HTML TXT EPUB PPTX PPT ODP PNG JPG TEX RST TYPST'],
+  pdf: ['PDF', 'PDF TXT PNG JPG'],
+  data: ['JSON YAML TOML NDJSON GEOJSON', 'JSON YAML TOML CSV TSV NDJSON'],
+  mesh: ['GLB GLTF OBJ STL PLY OFF', 'GLB GLTF OBJ STL PLY OFF'],
+  arch: ['ZIP 7Z RAR ISO CAB TAR', 'ZIP 7Z TAR TAR.GZ TAR.XZ TAR.ZST TAR.BZ2'],
+};
+const order = [];
+for (const k of Object.keys(KD)) for (const part of KD[k]) for (const f of part.split(' ')) if (!order.includes(f)) order.push(f);
+const wall = $('#wall'), wcap = $('#wcap');
+const tks = order.map((f) => { const s = document.createElement('span'); s.className = 'tk'; s.textContent = f; s.dataset.f = f; wall.append(s); return s; });
+let wAuto = true, wI = 0;
+function focusFmt(f) {
+  const tg = new Set();
+  for (const k of Object.keys(KD)) if (KD[k][0].split(' ').includes(f)) KD[k][1].split(' ').forEach((x) => tg.add(x));
+  wall.classList.add('act');
+  tks.forEach((s) => { s.classList.toggle('src', s.dataset.f === f); s.classList.toggle('t', tg.has(s.dataset.f) && s.dataset.f !== f); });
+  tg.delete(f);
+  wcap.innerHTML = tg.size ? `<i></i><b>${f}</b> → ${fmt(L()['w.to'], { n: tg.size })}` : `<i></i><b>${f}</b> · ${L()['w.out']}`;
+}
+function clearFmt() { wall.classList.remove('act'); wcap.innerHTML = `<i></i><span>${L()['w.hint']}</span>`; }
+wall.addEventListener('pointerover', (e) => { const t = e.target.closest('.tk'); if (t) { wAuto = false; focusFmt(t.dataset.f); } });
+wall.addEventListener('pointerleave', () => { wAuto = true; clearFmt(); });
+const DEMO = ['MP4', 'XLSX', 'PNG', 'DOCX', 'WAV', 'GLB', 'JSON', 'RAR'];
+setInterval(() => { if (wAuto && isOn('#formats')) { focusFmt(DEMO[wI % DEMO.length]); wI++; } }, 2200);
+
+/* ---------------------------------------------------------------- downloads */
+const linux = /Linux|X11/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
+$(linux ? '#d-lin' : '#d-win').classList.add('me');
+fetch(`https://api.github.com/repos/${REPO}/releases/latest`).then((r) => (r.ok ? r.json() : null)).then((rel) => {
+  if (!rel || !rel.assets) return;
+  const find = (re) => rel.assets.find((a) => re.test(a.name));
+  const set = (id, re) => { const a = find(re); if (a) { const el = $(id); el.href = a.browser_download_url; el.title = a.name + ' · ' + (a.size / 1048576).toFixed(1) + ' MB'; } return a; };
+  const exe = set('#d-exe', /x64-setup\.exe$/); set('#d-msi', /\.msi$/); set('#d-port', /portable\.exe$/);
+  const app = set('#d-app', /\.AppImage$/); set('#d-deb', /\.deb$/); set('#d-rpm', /\.rpm$/);
+  const v = (rel.tag_name || '').replace(/^v/, '');
+  $('#d-wv').textContent = 'v' + v + (exe ? ' · ' + (exe.size / 1048576).toFixed(1) + ' MB' : '');
+  $('#d-lv').textContent = 'v' + v + (app ? ' · ' + (app.size / 1048576).toFixed(0) + ' MB' : '');
+}).catch(() => {});
+
+/* ---------------------------------------------------------------- loop */
+const vis = new Map();
+const vio = new IntersectionObserver((es) => es.forEach((e) => vis.set('#' + e.target.id, e.isIntersecting)), { threshold: 0.25 });
+nodes.forEach((n) => vio.observe(n));
+function isOn(id) { return !!vis.get(id); }
+let lt = 0;
+function loop(now) {
+  const dt = Math.min(50, now - (lt || now)); lt = now;
+  if (dirty) layout();
+  if (scrolled) drawWires();
+  if (heroOn && document.visibilityState === 'visible') drawDots(now);
+  if (isOn('#profiles') && !RM) drawDrum(dt);
+  requestAnimationFrame(loop);
+}
+applyLang();
+sizeDots();
+pickCv(0);
+drawDrum(0);
+requestAnimationFrame(loop);
 })();
 </script>
 </body>

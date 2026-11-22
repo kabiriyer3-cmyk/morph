@@ -2,12 +2,10 @@
 
 ### What's new
 
-- **Converter window.** The classic *Add files, Profile, Convert* flow (like Bigasoft or Format Factory) on top of the node engine: 81 device profiles (iPhone, Android, PlayStation, Xbox, Switch, Smart TV, DVD/VCD, YouTube, TikTok and more), edits that apply to every file (trim, crop, rotate, effects, watermark, subtitles), merge into one file, snapshots and *Open as workflow*.
-- **Compress for Services.** One node fits any file under an upload limit: Discord (10 MB, Nitro Basic, Nitro), Telegram, WhatsApp, Signal, iMessage, Messenger, Slack, VK, Gmail, Outlook, Yahoo or a custom size. Videos get a bitrate fit, images a quality search and resize, GIFs fewer colors or MP4, audio a bitrate budget, PDFs Ghostscript, everything else zip and split into parts.
-- **Device profiles in Convert Video.** Pick a profile or keep full manual control.
-- **Pill UI.** Fully rounded controls, floating panels and a new sidebar with sections, counts, a sliding indicator and an engine status ring.
-- **Classic effects.** Old film, emboss, sketch and mosaic.
-- **Landing page** with downloads in `docs/index.html`.
+- **Compact UI.** Calmer and easier to read: the sidebar is just navigation (no duplicated search, logo or status), the dashboard shows the four main actions, one activity strip, templates and recent runs. The activity cards no longer draw broken nested borders.
+- **Tighter node library.** One line per node with the description in the tooltip, categories in a single scrollable row.
+- **Tighter Converter window.** Smaller profile cards, two columns even on 1280 px screens, no duplicated badges and counters.
+- **New website.** The landing page is now a live node graph: drag the nodes, follow the wire as you scroll, try Convert and Compress for Services right on the page.
 
 ### Downloads
 
