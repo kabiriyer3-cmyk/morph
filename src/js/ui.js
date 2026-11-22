@@ -110,6 +110,8 @@ const ICONS = {
   wand: `<path d='M4 20L15 9'/><path d='M14 3v3M14 12v-1M9.5 7.5H11M17 7.5h3M17.6 4.4l-1.4 1.4M17.6 10.6l-1.4-1.4'/>`,
   frame: `<rect x='3' y='3' width='18' height='18' rx='3'/><rect x='7.5' y='7.5' width='9' height='9' rx='1.5'/>`,
   collage: `<rect x='3' y='3' width='8' height='10' rx='1.5'/><rect x='13' y='3' width='8' height='6' rx='1.5'/><rect x='13' y='11' width='8' height='10' rx='1.5'/><rect x='3' y='15' width='8' height='6' rx='1.5'/>`,
+  dashboard: `<rect x='3.5' y='3.5' width='7' height='9' rx='1.6'/><rect x='13.5' y='3.5' width='7' height='5' rx='1.6'/><rect x='13.5' y='11.5' width='7' height='9' rx='1.6'/><rect x='3.5' y='15.5' width='7' height='5' rx='1.6'/>`,
+  home: `<path d='M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z'/>`,
   grid: `<rect x='3' y='3' width='18' height='18' rx='2'/><path d='M3 9h18M3 15h18M9 3v18M15 3v18'/>`,
   scissors: `<circle cx='6' cy='7' r='2.6'/><circle cx='6' cy='17' r='2.6'/><path d='M8.2 8.6L20 19M8.2 15.4L20 5'/>`,
   merge: `<path d='M7 3.5v4c0 3.5 5 4.5 5 8.5v4.5M17 3.5v4c0 3.5-5 4.5-5 8.5'/>`,
@@ -164,7 +166,7 @@ const ICONS = {
 
 export function icon(name, size = 16) {
   const tpl = document.createElement('template');
-  tpl.innerHTML = `<svg class='ic' viewBox='0 0 24 24' width='${size}' height='${size}' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>${ICONS[name] || FILE}</svg>`;
+  tpl.innerHTML = `<svg class='ic' viewBox='0 0 24 24' width='${size}' height='${size}' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>${ICONS[name] || FILE}</svg>`;
   return tpl.content.firstElementChild;
 }
 
