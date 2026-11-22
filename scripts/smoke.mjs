@@ -1,5 +1,5 @@
 // Serves src/ over HTTP, opens it in headless Chrome in demo mode, verifies the app booted
-// without errors and saves docs/screenshot.png (canvas) and docs/dashboard.png (dashboard).
+// without errors and saves docs/screenshot.png (canvas), docs/dashboard.png (dashboard) and docs/converter.png.
 // Uses the DevTools protocol for exact 1600x1000 shots; falls back to --screenshot on old Node.
 import http from 'node:http';
 import { readFileSync, existsSync, statSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -70,7 +70,7 @@ async function withCdp() {
     await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
     await send('Page.enable');
 
-    const shoot = async (query, file, label) => {
+    const shoot = async (query, file, label, act, check) => {
       await send('Page.navigate', { url: base + query });
       let ready = false;
       for (let i = 0; i < 120 && !ready; i++) {
@@ -84,11 +84,19 @@ async function withCdp() {
       const nodes = await evaluate("document.querySelectorAll('.node').length");
       console.log(`smoke ${label}: ${nodes} nodes rendered`);
       if (!(nodes >= 3)) errors.push(`${label}: expected the demo graph to render nodes, found ${nodes}`);
+      if (act) {
+        await evaluate(act);
+        await sleep(1200);
+        const n = await evaluate(check);
+        console.log(`smoke ${label}: ${n} items`);
+        if (!(n > 0)) errors.push(`${label}: nothing rendered for ${check}`);
+      }
       const shot = await send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(docs, file), Buffer.from(shot.result.data, 'base64'));
     };
     await shoot('', 'screenshot.png', 'canvas');
     await shoot('&view=home', 'dashboard.png', 'dashboard');
+    await shoot('&view=editor', 'converter.png', 'converter', "document.getElementById('btn-quick').click()", "document.querySelectorAll('.cv-prof').length");
     ws.close();
   } finally {
     proc.kill();
