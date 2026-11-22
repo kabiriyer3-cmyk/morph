@@ -11,6 +11,8 @@ import { renderToolsPanel, onInstallEvent, toolLabel, TOOL_ORDER } from './tools
 import { paint } from './colors.js';
 import { t, setLang, detectLang, getLang, applyI18n, nodeTitle, nodeDesc, catLabel, tplText } from './i18n.js';
 import { $, $$, el, icon, toast, menu, closeMenu, dialog, fmtTime, debounce, clamp } from './ui.js';
+import { startBoot, replayBoot } from './boot.js';
+import { renderHome } from './home.js';
 
 const REPO = 'https://github.com/kabiriyer3-cmyk/morph';
 const LS = { settings: 'morph.settings', graph: 'morph.graph', history: 'morph.history' };
@@ -34,8 +36,11 @@ const writeJSON = (k, v) => {
 const settings = Object.assign({
   lang: '', ffmpeg: '', ffprobe: '', soffice: '', pandoc: '', gs: '', sevenzip: '', snap: true, panel: 'library',
   accent: 'cobalt', grid: 'dots', motion: true, minimap: true, desc: false, output: '', confirm: true, favs: [], recent: [], closed: [], qc_dest: 'next',
+  boot: true, start: 'home',
 }, readJSON(LS.settings, {}));
-const ACCENTS = [['cobalt', 'Cobalt', '#2f6ff2'], ['violet', 'Violet', '#7c5cff'], ['emerald', 'Emerald', '#10b981'], ['amber', 'Amber', '#f59e0b'], ['rose', 'Rose', '#f43f5e'], ['mono', 'Graphite', '#c9d1de']];
+const ACCENTS = [['cobalt', 'Cobalt', '#3b7bff'], ['violet', 'Violet', '#8b5cf6'], ['emerald', 'Emerald', '#10b981'], ['amber', 'Amber', '#f59e0b'], ['rose', 'Rose', '#f43f5e'], ['mono', 'Graphite', '#e4e4e7']];
+const MARK_PATH = 'M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z';
+const DAY_MS = 86400000;
 const saveSettings = () => writeJSON(LS.settings, settings);
 
 let editor = null;
@@ -43,7 +48,7 @@ let inspector = null;
 let wfName = '';
 let tools = {};
 let run = null;
-let version = '0.2.0';
+let version = '0.3.0';
 let panel = null;
 let searchBox = null;
 let placed = 0;
@@ -51,6 +56,9 @@ let toolStatus = null;
 let minimap = null;
 let quick = null;
 let libCat = 'all';
+let view = 'editor';
+let splash = null;
+let canvasLeft = null;
 
 const setMsg = (s) => {
   $('#st-msg').textContent = s || '';
@@ -129,7 +137,7 @@ function updateWelcome() {
   if (!empty || w.childNodes.length) return;
   const act = (ic, title, text, fn) => el('button', { class: 'wc-act', onclick: fn }, icon(ic, 20), el('b', { text: title }), el('span', { text }));
   w.append(el('div', { class: 'wc' },
-    el('img', { src: 'assets/logo.svg', alt: '' }),
+    markIcon(30),
     el('h1', { text: t('welcome.title') }),
     el('p', { text: t('welcome.text') }),
     el('div', { class: 'wc-actions' },
@@ -168,18 +176,15 @@ function paletteCtx() {
     running: () => !!run,
     run: () => (run ? cancelRun() : startRun()),
     quick: (o) => quick.open(o || {}),
-    newWf: () => $('#btn-new').click(),
+    newWf: () => newWorkflow(),
+    home: () => setView('home'),
     open: () => openWorkflow(),
     save: () => saveWorkflow(),
     fit: () => editor.fit(),
     arrange: () => editor.arrange(),
     minimap: () => toggleMinimap(),
     selectAll: () => editor.selectAll(),
-    addNode: (type) => {
-      const c = editor.centerWorld();
-      const off = (placed++ % 6) * 24;
-      addNodeAt(type, c.x - 140 + off, c.y - 100 + off);
-    },
+    addNode: (type) => addAtCenter(type),
     panel: (name) => togglePanel(name, { force: true }),
     toggleLang: () => {
       settings.lang = getLang() === 'ru' ? 'en' : 'ru';
@@ -195,6 +200,114 @@ function paletteCtx() {
   };
 }
 
+function markIcon(size) {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = `<svg class='mark' viewBox='86 86 340 340' width='${size}' height='${size}' aria-hidden='true'><path fill='currentColor' d='${MARK_PATH}'/></svg>`;
+  return tpl.content.firstElementChild;
+}
+
+// ------------------------------------------------------------------ views: dashboard and canvas
+function rememberCanvas() {
+  const r = $('#canvas').getBoundingClientRect();
+  if (r.width) canvasLeft = r.left;
+}
+
+function setView(v, o = {}) {
+  const next = v === 'home' ? 'home' : 'editor';
+  if (next === view && !o.force) {
+    if (next === 'home') renderHomeView();
+    return;
+  }
+  if (view === 'editor') rememberCanvas();
+  view = next;
+  document.body.dataset.view = next;
+  document.body.classList.remove('home-panel');
+  $('#home').hidden = next !== 'home';
+  $('#tab-home').classList.toggle('on', next === 'home');
+  $('#tab-editor').classList.toggle('on', next === 'editor');
+  closeSearch();
+  if (next === 'home') {
+    renderHomeView();
+    return;
+  }
+  $('#home').textContent = '';
+  const left = $('#canvas').getBoundingClientRect().left;
+  if (canvasLeft != null && left !== canvasLeft && editor) {
+    editor.view.x -= left - canvasLeft;
+    editor.applyView();
+  }
+  canvasLeft = left;
+  if (editor) editor.redraw();
+  if (minimap) minimap.update();
+}
+
+const startView = () => {
+  const q = new URLSearchParams(location.search).get('view');
+  if (q === 'home' || q === 'editor') return q;
+  if (SMOKE) return 'editor';
+  return settings.start === 'editor' ? 'editor' : 'home';
+};
+
+// Sample activity for the browser demo so the dashboard is not empty. Never saved.
+function demoHistory() {
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const names = ['web-images', 'compress-video', 'excel-csv', 'docs-pdf', 'gif', 'convert-all', 'music', 'pdf-merge']
+    .map((id) => TEMPLATES.find((x) => x.id === id)).filter(Boolean).map((x) => tplText(x, 'title'));
+  const now = Date.now();
+  const out = [];
+  for (let i = 0; i < 34; i++) {
+    const age = i < 3 ? (i + 1) * 1500000 * rnd() : rnd() ** 0.8 * 13.6 * DAY_MS;
+    const fail = rnd() < 0.08;
+    const cancelled = !fail && rnd() < 0.05;
+    out.push({ at: now - Math.round(age), name: names[Math.floor(rnd() * names.length)], ok: !fail && !cancelled, cancelled, error: fail ? 'ffmpeg exited with code 1' : null, ms: Math.round(700 + rnd() ** 2 * 90000), files: Math.round(2 + rnd() ** 2 * 160) });
+  }
+  return out.sort((a, b) => b.at - a.at);
+}
+
+function homeHistory() {
+  const h = readJSON(LS.history, []);
+  return h.length || !DEMO ? h : demoHistory();
+}
+
+function renderHomeView() {
+  if (view !== 'home' || !editor) return;
+  renderHome($('#home'), {
+    version: () => version,
+    demo: DEMO,
+    history: () => homeHistory(),
+    status: () => toolStatus || { tools: Object.fromEntries(Object.entries(tools).map(([k, v]) => [k, v || {}])) },
+    graph: () => ({ name: wfName, nodes: editor.nodes.size, links: editor.links.size }),
+    editor: () => setView('editor'),
+    quick: () => quick.open(),
+    newWorkflow: () => newWorkflow(),
+    openWorkflow: () => openWorkflow(),
+    palette: () => openPalette(paletteCtx()),
+    panel: (name) => togglePanel(name, { force: true }),
+    template: (tpl) => pickTemplate(tpl),
+    library: (cat) => {
+      libCat = cat || 'all';
+      setView('editor');
+      togglePanel('library', { force: true });
+    },
+  });
+}
+
+async function newWorkflow() {
+  if (editor.nodes.size && !(await dialog({ title: t('top.new'), text: t('wf.new') }))) return;
+  setView('editor');
+  editor.load({ nodes: [], links: [] });
+  const a = editor.addNode('files.load', 40, 80, DEMO ? { paths: [DEMO_ROOT] } : {}, { silent: true });
+  const b = editor.addNode('files.preview', 420, 80, {}, { silent: true });
+  editor.connect(a.id, 0, b.id, 0, { silent: true });
+  updateWelcome();
+  updateStatus();
+  setName('');
+  editor.resetHistory();
+  requestAnimationFrame(() => editor.fit());
+  autosave();
+}
+
 async function pickTemplate(tpl) {
   if (settings.confirm !== false && editor.nodes.size && !(await dialog({ title: tplText(tpl, 'title'), text: t('tpl.replace', { name: tplText(tpl, 'title') }) }))) return;
   loadTemplate(tpl);
@@ -203,14 +316,17 @@ async function pickTemplate(tpl) {
 // ------------------------------------------------------------------ boot
 async function boot() {
   setLang(settings.lang || detectLang());
+  splash = startBoot();
+  splash.version(version);
+  splash.step(t('boot.ui'), 0.1);
   applyLook();
   applyI18n(document.body);
   $$('[data-icon]').forEach((b) => {
-    const size = b.closest('#drop-hint') ? 40 : b.classList.contains('sb-btn') ? 20 : b.closest('.tb-pill') ? 15 : 17;
+    const size = b.closest('#drop-hint') ? 36 : b.classList.contains('sb-btn') ? 18 : b.closest('.tb-pill, .tab, .dock-add') ? 15 : 16;
     b.prepend(icon(b.dataset.icon, size));
   });
-  $$('[data-tip-key]').forEach((b) => {
-    b.dataset.tip = t(b.dataset.tipKey);
+  $$('[data-label-key]').forEach((b) => {
+    b.append(el('span', { class: 'sb-l', text: t(b.dataset.labelKey) }));
   });
   $('#st-ver').textContent = 'v' + version + (DEMO ? ' · ' + t('st.demo') : '');
   setMsg(t('st.ready'));
@@ -229,6 +345,7 @@ async function boot() {
       updateStatus();
       updateUndo();
       updateWelcome();
+      refreshEmpty();
       if (minimap) minimap.update();
     },
     onHistory: () => updateUndo(),
@@ -251,7 +368,8 @@ async function boot() {
       if (c && c.kind === 'node' && c.id === n.id) inspector.showNode(n);
     },
   });
-  inspector = new Inspector($('#inspector'), { editor, open: openPath, reveal: revealPath, missing: missingTools, tools: () => togglePanel('tools', { force: true }) });
+  splash.step(t('boot.nodes', { n: NODE_COUNT }), 0.3);
+  inspector = new Inspector($('#inspector'), { editor, open: openPath, reveal: revealPath, missing: missingTools, tools: () => togglePanel('tools', { force: true }), name: () => wfName, last: () => homeHistory()[0] || null });
   minimap = new Minimap($('#minimap'), editor);
   quick = new QuickConvert({
     settings,
@@ -267,6 +385,7 @@ async function boot() {
     reveal: (p) => revealPath(p),
     history: (h) => pushHistory(h),
     load: (g, name) => {
+      setView('editor');
       editor.loadIndexed(g);
       setName(name);
       editor.resetHistory();
@@ -290,20 +409,31 @@ async function boot() {
     } else if (panel === 'tools') renderPanel('tools');
   }));
   restoreGraph();
+  splash.step(t('boot.workflow'), 0.5);
   toggleMinimap(settings.minimap !== false);
   updateWelcome();
   updateStatus();
   updateUndo();
+  setView(startView(), { force: true });
   invoke('system_info')
     .then((s) => {
-      if (s && s.version) version = s.version;
+      if (s && s.version && !DEMO) version = s.version;
       $('#st-ver').textContent = 'v' + version + (DEMO ? ' · ' + t('st.demo') : '');
+      splash.version(version);
+      if (view === 'home') renderHomeView();
     })
     .catch(() => {});
-  detectTools();
+  splash.step(t('boot.tools'), 0.72);
+  await Promise.race([detectTools(), new Promise((r) => setTimeout(r, 1500))]);
+  splash.step(t('boot.ready'), 1);
   if (SMOKE) startSmoke();
   else document.body.dataset.ready = '1';
+  splash.done();
 }
+
+const refreshEmpty = debounce(() => {
+  if (inspector && !inspector.current) inspector.showEmpty();
+}, 160);
 
 function restoreGraph() {
   const g = SMOKE ? null : readJSON(LS.graph, null);
@@ -318,6 +448,7 @@ function restoreGraph() {
 }
 
 function loadTemplate(tpl, quiet) {
+  if (!quiet) setView('editor');
   const g = tpl.build();
   if (DEMO) {
     for (const n of g.nodes) if (n.type === 'files.load') n.values = { ...n.values, paths: [DEMO_ROOT] };
@@ -333,24 +464,20 @@ function loadTemplate(tpl, quiet) {
 
 // ------------------------------------------------------------------ top bar
 function bindTopbar() {
-  $('#btn-new').onclick = async () => {
-    if (editor.nodes.size && !(await dialog({ title: t('top.new'), text: t('wf.new') }))) return;
-    editor.load({ nodes: [], links: [] });
-    const a = editor.addNode('files.load', 40, 80, DEMO ? { paths: [DEMO_ROOT] } : {}, { silent: true });
-    const b = editor.addNode('files.preview', 420, 80, {}, { silent: true });
-    editor.connect(a.id, 0, b.id, 0, { silent: true });
-    updateWelcome();
-    updateStatus();
-    setName('');
-    editor.resetHistory();
-    requestAnimationFrame(() => editor.fit());
-    autosave();
+  $('#btn-new').onclick = () => newWorkflow();
+  $('#brand').onclick = () => setView('home');
+  $('#tab-home').onclick = () => setView('home');
+  $('#tab-editor').addEventListener('click', () => setView('editor'));
+  $('#dock-add').onclick = () => {
+    const r = $('#canvas').getBoundingClientRect();
+    openSearch(r.left + r.width / 2 - 190, Math.max(r.top + 12, r.bottom - 500), { world: editor.centerWorld() });
   };
+  $('#dock-note').onclick = () => addAtCenter('util.note');
   $('#btn-open').onclick = () => openWorkflow();
   $('#btn-save').onclick = () => saveWorkflow();
   $('#btn-undo').onclick = () => editor.undo();
   $('#btn-redo').onclick = () => editor.redo();
-  $('#btn-fit').onclick = () => editor.fit();
+  $('#btn-fit').onclick = () => (view === 'editor' ? editor.fit() : setView('editor'));
   $('#btn-arrange').onclick = () => editor.arrange();
   $('#btn-run').onclick = () => (run ? cancelRun() : startRun());
   $('#btn-minimap').onclick = () => toggleMinimap();
@@ -380,6 +507,15 @@ function bindSidebar() {
 }
 
 function togglePanel(name, o = {}) {
+  // On the dashboard the side panel stays hidden until a rail button asks for it.
+  if (view === 'home' && name && !document.body.classList.contains('home-panel')) {
+    document.body.classList.add('home-panel');
+    if (name === panel) {
+      renderPanel(name);
+      return;
+    }
+    o = { ...o, force: true };
+  }
   let next = name;
   if (!o.initial && !o.force && next === panel) next = null;
   const canvas = $('#canvas');
@@ -392,10 +528,11 @@ function togglePanel(name, o = {}) {
     settings.panel = next;
     saveSettings();
     const after = canvas.getBoundingClientRect().left;
-    if (after !== before && editor) {
+    if (after !== before && editor && view === 'editor') {
       editor.view.x -= after - before;
       editor.applyView();
     }
+    if (view === 'editor') rememberCanvas();
   }
 }
 
@@ -459,6 +596,7 @@ function matches(q, type, def) {
 }
 
 function addAtCenter(type) {
+  setView('editor');
   const c = editor.centerWorld();
   const off = (placed++ % 6) * 24;
   addNodeAt(type, c.x - 140 + off, c.y - 100 + off);
@@ -672,6 +810,16 @@ function renderSettings(body) {
       renderPanel('settings');
     },
   })));
+  const startSeg = el('div', { class: 'seg-ctl', style: { width: '170px' } }, ['home', 'editor'].map((g) => el('button', {
+    class: (settings.start || 'home') === g ? 'on' : '',
+    text: t('set.start_' + g),
+    onclick: (e) => {
+      e.preventDefault();
+      settings.start = g;
+      saveSettings();
+      renderPanel('settings');
+    },
+  })));
   body.append(el('div', { class: 'set-group' },
     el('h3', {}, icon('sun', 13), t('set.appearance')),
     row(t('set.accent'), swatches),
@@ -681,7 +829,17 @@ function renderSettings(body) {
       settings.motion = v;
       saveSettings();
       applyLook();
-    }))));
+    })),
+    row(t('set.boot'), el('span', { class: 'set-ctl' },
+      sw(settings.boot !== false, (v) => {
+        settings.boot = v;
+        saveSettings();
+      }),
+      el('button', { class: 'btn sm ghost', title: t('set.boot_play'), onclick: (e) => {
+        e.preventDefault();
+        replayBoot(version);
+      } }, icon('play', 11), t('set.boot_play'))), t('set.boot_hint')),
+    row(t('set.start'), startSeg, t('set.start_hint'))));
 
   const out = el('input', { class: 'field', placeholder: '~/Morph Output', spellcheck: 'false', value: settings.output || '' });
   out.addEventListener('change', () => {
@@ -753,6 +911,7 @@ async function detectTools() {
   }
   renderToolChips();
   editor.setMissing(missingTools());
+  if (view === 'home') renderHomeView();
   if (panel === 'tools' || panel === 'library') renderPanel(panel);
   inspector.refresh();
 }
@@ -959,6 +1118,22 @@ function bindKeys() {
       return;
     }
     if (typing || document.querySelector('.dialog-back')) return;
+    if (view === 'home') {
+      if (mod && k === 's') {
+        e.preventDefault();
+        saveWorkflow();
+      } else if (mod && k === 'o') {
+        e.preventDefault();
+        openWorkflow();
+      } else if (!mod && (k === '?' || (k === '/' && e.shiftKey))) showHelp();
+      else if (!mod && k === 'tab') {
+        e.preventDefault();
+        setView('editor');
+        const r = $('#canvas').getBoundingClientRect();
+        openSearch(r.left + r.width / 2 - 190, r.top + r.height / 2 - 160, { world: editor.centerWorld() });
+      }
+      return;
+    }
     if (mod && k === 'z' && !e.shiftKey) {
       e.preventDefault();
       editor.undo();
@@ -1030,6 +1205,11 @@ function addDropped(paths, pos) {
     quick.addPaths(paths);
     return;
   }
+  if (view === 'home' && quick) {
+    quick.open();
+    quick.addPaths(paths);
+    return;
+  }
   const hit = document.elementFromPoint(pos.x, pos.y);
   const nodeEl = hit && hit.closest ? hit.closest('.node') : null;
   let target = nodeEl ? editor.get(nodeEl.dataset.id) : null;
@@ -1079,6 +1259,7 @@ async function openWorkflow() {
     if (!text) return;
     const g = JSON.parse(text);
     if (!g || !Array.isArray(g.nodes)) throw new Error(t('wf.bad'));
+    setView('editor');
     editor.load(g);
     setName(g.name || '');
     editor.resetHistory();
@@ -1218,6 +1399,8 @@ function pushHistory(h) {
   hist.unshift({ at: Date.now(), ...h });
   if (!SMOKE) writeJSON(LS.history, hist.slice(0, 100));
   if (panel === 'history') renderPanel('history');
+  if (view === 'home') renderHomeView();
+  if (inspector && !inspector.current) refreshEmpty();
 }
 
 // ------------------------------------------------------------------ CI smoke test (index.html?demo=1&smoke=1)
