@@ -3,12 +3,15 @@ import { el, icon, kindIcon, fmtBytes, fmtTime, fmtPct, fmtDur, dirname, extOf, 
 import { t, nodeTitle, nodeDesc, sockLabel, catLabel } from './i18n.js';
 import { invoke, fileSrc, loadThumb, DEMO, toolSettings } from './api.js';
 import { createViewer } from './viewer3d.js';
-import { CATEGORIES } from './nodes.js';
+import { CATEGORIES, typeColor } from './nodes.js';
+import { paint } from './colors.js';
 
 const WEB_IMG = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp', 'avif', 'ico']);
 const WEB_VID = new Set(['mp4', 'webm', 'mov', 'm4v', 'ogv']);
 const WEB_AUD = new Set(['mp3', 'm4a', 'aac', 'ogg', 'oga', 'opus', 'wav', 'flac']);
-const TOOL_NAMES = { ffmpeg: 'FFmpeg', soffice: 'LibreOffice', pandoc: 'Pandoc' };
+const TOOL_NAMES = { ffmpeg: 'FFmpeg', soffice: 'LibreOffice', pandoc: 'Pandoc', gs: 'Ghostscript', sevenzip: '7-Zip' };
+const SHEET_EXT = new Set(['xlsx', 'xlsm', 'xlsb', 'xls', 'ods', 'csv', 'tsv']);
+const IS_WIN = typeof navigator !== 'undefined' && /Windows/i.test(navigator.userAgent || '');
 
 export class Inspector {
   constructor(root, ctx) {
@@ -58,14 +61,23 @@ export class Inspector {
     this.current = { kind: 'node', id: n.id };
     const def = n.def;
     const cat = CATEGORIES[def.cat] || CATEGORIES.util;
-    this.root.append(el('div', { class: 'insp-head' },
-      el('span', { class: 'dot', style: { '--c': cat.color } }),
-      el('div', { class: 't' }, el('b', { text: n.title || nodeTitle(n.type) }), el('small', { text: catLabel(def.cat) + ' · ' + n.type }))));
-    const about = el('div', { class: 'insp-sec' }, el('p', { text: nodeDesc(n.type) }));
+    this.root.append(paint(el('div', { class: 'insp-head' },
+      el('span', { class: 'hi' }, icon(def.icon || cat.icon, 18)),
+      el('div', { class: 't' }, el('b', { text: n.title || nodeTitle(n.type) }), el('small', { text: catLabel(def.cat) + ' · ' + n.type }))), def.color || cat.color));
+    const about = el('div', { class: 'insp-sec' }, el('h4', { text: t('insp.about') }), el('p', { class: 'node-desc-full', text: nodeDesc(n.type) }));
     if (def.needs && this.ctx.missing && this.ctx.missing().has(def.needs)) {
-      about.append(el('div', { class: 'box warn', style: { marginTop: '10px' }, text: t('insp.needs', { tool: TOOL_NAMES[def.needs] || def.needs }) }));
+      const box = el('div', { class: 'box warn', style: { marginTop: '10px' } }, el('div', { text: t('insp.needs', { tool: TOOL_NAMES[def.needs] || def.needs }) }));
+      if (this.ctx.tools) box.append(el('button', { class: 'btn sm primary', onclick: () => this.ctx.tools() }, icon('download', 12), t('insp.install', { tool: TOOL_NAMES[def.needs] || def.needs })));
+      about.append(box);
     }
     this.root.append(about);
+    if (def.inputs.length || def.outputs.length) {
+      const ioRow = (s) => el('div', {}, el('i', { style: { '--t': typeColor(s.type) } }), sockLabel(s.name), el('small', { text: s.type.toLowerCase() }));
+      const sec = el('div', { class: 'insp-sec', style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' } });
+      sec.append(el('div', {}, el('h4', { text: t('insp.inputs') }), el('div', { class: 'io-list' }, def.inputs.length ? def.inputs.map(ioRow) : el('div', { class: 'muted', text: '—' }))));
+      sec.append(el('div', {}, el('h4', { text: t('insp.outputs_s') }), el('div', { class: 'io-list' }, def.outputs.length ? def.outputs.map(ioRow) : el('div', { class: 'muted', text: '—' }))));
+      this.root.append(sec);
+    }
     if (n.error) this.root.append(el('div', { class: 'insp-sec' }, el('h4', { text: t('insp.error') }), el('div', { class: 'box err', text: n.error })));
     const ev = n.result;
     const warnings = (ev && ev.warnings) || n.warnings || [];
@@ -218,6 +230,8 @@ export class Inspector {
       if (data.simplified) pv.append(el('div', { class: 'lbl-simpl', text: t('insp.simplified') }));
       return true;
     }
+    if (SHEET_EXT.has(ext)) return this.sheetPreview(f, pv, set, live, msg);
+    if (ext === 'pdf') return this.pdfPreview(f, pv, set, live, msg);
     if (f.kind === 'archive') {
       const r = await invoke('list_archive', { path: f.path });
       const entries = (r && r.entries) || [];
@@ -251,6 +265,76 @@ export class Inspector {
         r && r.truncated ? el('div', { class: 'muted', style: { paddingTop: '6px', fontSize: '11px' }, text: t('insp.truncated') }) : null));
     }
     return set(msg('insp.no_preview'));
+  }
+
+  async sheetPreview(f, pv, set, live, msg, sheet) {
+    const r = await invoke('sheet_preview', { path: f.path, sheet: sheet || null, limit: 300 });
+    if (!live()) return false;
+    const rows = (r && r.rows) || [];
+    if (!rows.length) return set(msg('insp.no_preview'));
+    const wrap = el('div', { style: { width: '100%' } });
+    const sheets = (r && r.sheets) || [];
+    if (sheets.length > 1) {
+      wrap.append(el('div', { class: 'sheet-tabs' }, sheets.map((name) => el('button', {
+        class: name === r.sheet ? 'on' : '',
+        text: name,
+        onclick: () => {
+          pv.textContent = '';
+          pv.append(el('div', { class: 'pv-msg', text: t('insp.loading') }));
+          this.sheetPreview(f, pv, set, live, msg, name).catch(() => {});
+        },
+      }))));
+    }
+    const cols = Math.min(Math.max(...rows.map((x) => x.length), 0), 60);
+    const letter = (i) => {
+      let s = '';
+      let n = i + 1;
+      while (n > 0) {
+        const m = (n - 1) % 26;
+        s = String.fromCharCode(65 + m) + s;
+        n = Math.floor((n - 1) / 26);
+      }
+      return s;
+    };
+    const table = el('table', { class: 'sheet' });
+    table.append(el('tr', {}, el('th', { class: 'rn', text: '' }), Array.from({ length: cols }, (_, i) => el('th', { text: letter(i) }))));
+    rows.forEach((row, ri) => {
+      const tr = el('tr', {}, el('td', { class: 'rn', text: String(ri + 1) }));
+      for (let i = 0; i < cols; i++) {
+        const v = row[i] == null ? '' : String(row[i]);
+        tr.append(el('td', { class: v !== '' && !Number.isNaN(Number(v)) ? 'num' : '', text: v, title: v.length > 30 ? v : '' }));
+      }
+      table.append(tr);
+    });
+    const sw = el('div', { class: 'sheet-wrap scroll' }, table);
+    wrap.append(sw, el('div', { class: 'sheet-foot', text: t('insp.rows', { n: r.total_rows != null ? r.total_rows : rows.length }) + ' · ' + t('insp.cols', { n: r.cols || cols }) }));
+    pv.style.background = '#0d1117';
+    return set(wrap);
+  }
+
+  async pdfPreview(f, pv, set, live, msg) {
+    const info = await invoke('pdf_info', { path: f.path }).catch(() => null);
+    if (!live()) return false;
+    const wrap = el('div', { style: { width: '100%' } });
+    if (!DEMO && IS_WIN) wrap.append(el('iframe', { src: fileSrc(f.path), title: f.name }));
+    else {
+      const th = await loadThumb(f, 512).catch(() => null);
+      if (!live()) return false;
+      wrap.append(th ? el('img', { src: th, alt: '', style: { display: 'block', maxWidth: '100%', margin: '0 auto' } }) : msg('insp.no_preview'));
+    }
+    if (info) {
+      const kv = el('table', { class: 'kv', style: { margin: '10px 14px', width: 'calc(100% - 28px)' } });
+      const row = (k, v) => {
+        if (v != null && v !== '') kv.append(el('tr', {}, el('td', { text: k }), el('td', { text: String(v) })));
+      };
+      row(t('insp.pages'), info.pages);
+      if (info.page_mm) row(t('insp.page_size'), Math.round(info.page_mm[0]) + ' × ' + Math.round(info.page_mm[1]) + ' mm');
+      row(t('insp.version'), info.version);
+      row(t('insp.title'), info.title);
+      row(t('insp.author'), info.author);
+      wrap.append(kv);
+    }
+    return set(wrap);
   }
 
   compare(before, after, f) {

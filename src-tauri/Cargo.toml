@@ -1,6 +1,6 @@
 [package]
 name = "morph"
-version = "0.1.0"
+version = "0.2.0"
 description = "Node-based multitool for your files"
 authors = ["Morph contributors"]
 license = "MIT"
@@ -25,7 +25,8 @@ png = "0.17"
 color_quant = "1"
 resvg = "0.45"
 gltf = "1"
-zip = { version = "2", default-features = false, features = ["deflate", "bzip2", "zstd"] }
+# zip 2.6 changed ZipFile generics (breaks calamine 0.26), keep the 2.2..2.4 line
+zip = { version = ">=2.2, <2.5", default-features = false, features = ["deflate", "bzip2", "zstd"] }
 tar = "0.4"
 flate2 = "1"
 zstd = "0.13"
@@ -47,6 +48,17 @@ walkdir = "2"
 rayon = "1"
 regex = "1"
 chrono = "0.4"
+# spreadsheets
+calamine = "0.26"
+rust_xlsxwriter = "0.79"
+# PDF tools
+lopdf = "0.32"
+# QR codes, Markdown, EXIF
+qrcode = { version = "0.14", default-features = false }
+pulldown-cmark = { version = "0.12", default-features = false, features = ["html"] }
+kamadak-exif = "0.5"
+# one-click tool downloads (rustls, no OpenSSL)
+ureq = "2"
 
 [profile.release]
 opt-level = 3

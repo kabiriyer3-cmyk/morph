@@ -2,13 +2,14 @@
 import { NODE_DEFS, CATEGORIES, typeColor, compatible } from './nodes.js';
 import { createWidget, isVisible } from './widgets.js';
 import { el, svgEl, icon, kindIcon, fmtBytes, fmtTime, fmtPct, clamp, debounce, toast, NL } from './ui.js';
-import { t, nodeTitle, sockLabel } from './i18n.js';
+import { tint } from './colors.js';
+import { t, nodeTitle, sockLabel, groupLabel } from './i18n.js';
 import { loadThumb, invoke } from './api.js';
 
 // Must match .node-head / .node-slots / .slot-row in app.css.
-const HEAD = 30;
-const SLOT_TOP = 4;
-const ROW = 22;
+const HEAD = 36;
+const SLOT_TOP = 6;
+const ROW = 24;
 const GRID = 10;
 const PREVIEW_MAX = 48;
 
@@ -109,6 +110,8 @@ export class Editor {
       if (n && !this.sel.has(n.id)) this.select(n.id);
       return;
     }
+    const ae = document.activeElement;
+    if (ae && ae !== document.body && ae.blur && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) ae.blur();
     const sk = tg.closest('.sock');
     if (sk && n) {
       e.preventDefault();
@@ -403,6 +406,7 @@ export class Editor {
     const g = svgEl('g', { 'data-link': id });
     const hit = svgEl('path', { class: 'link-hit' });
     const path = svgEl('path', { class: 'link', stroke: typeColor(so.type) });
+    path.style.setProperty('--t', typeColor(so.type));
     g.append(hit, path);
     this.svg.append(g);
     const l = { id, from, out, to, in: inp, g, hit, path };
@@ -536,7 +540,7 @@ export class Editor {
       x: Math.round(Number(x) || 0), y: Math.round(Number(y) || 0),
       w: clamp(Number(o.w) || def.width || 280, 200, 900),
       values: vals, bypass: !!o.bypass, collapsed: !!o.collapsed, title: o.title || '',
-      status: null, result: null, error: null, warnings: [], widgets: new Map(),
+      status: null, result: null, error: null, warnings: [], widgets: new Map(), showAdv: !!o.adv,
     };
     this.build(n);
     this.nodes.set(id, n);
@@ -549,31 +553,69 @@ export class Editor {
   build(n) {
     const def = n.def;
     const cat = CATEGORIES[def.cat] || CATEGORIES.util;
-    const e = el('div', { class: 'node' + (def.frontendOnly ? ' note' : ''), dataset: { id: String(n.id), type: n.type } });
-    e.style.setProperty('--c', cat.color);
+    const cls = 'node' + (def.frontendOnly ? ' note' : '') + ' cat-' + def.cat;
+    const e = el('div', { class: cls, dataset: { id: String(n.id), type: n.type } });
+    const c = def.color || cat.color;
+    e.style.setProperty('--c', c);
+    for (const a of [8, 12, 16, 20, 24, 30, 40, 60]) e.style.setProperty('--ca' + String(a).padStart(2, '0'), tint(c, a / 100));
     n.titleEl = el('span', { class: 'title', text: n.title || nodeTitle(n.type) });
     n.badgeEl = el('span', { class: 'badge' });
-    const dot = el('span', { class: 'dot', title: t('menu.collapse') });
+    const dot = el('span', { class: 'dot', title: t('menu.collapse') }, icon(def.icon || cat.icon, 13));
     dot.addEventListener('pointerdown', (ev) => ev.stopPropagation());
     dot.addEventListener('click', (ev) => {
       ev.stopPropagation();
       this.toggleCollapse(n.id);
     });
-    n.warnEl = el('span', { class: 'warn-ic' }, icon('alert', 13));
-    e.append(el('div', { class: 'node-head' }, dot, n.titleEl, n.warnEl, n.badgeEl));
+    n.warnEl = el('span', { class: 'warn-ic', title: def.needs ? t('insp.needs', { tool: def.needs }) : '' }, icon('alert', 13));
+    e.append(el('div', { class: 'node-head' }, dot, n.titleEl, el('span', { class: 'tag', text: t('nd.bypassed') }), n.warnEl, el('span', { class: 'done-ic' }, icon('check', 13)), n.badgeEl));
     const rows = Math.max(def.inputs.length, def.outputs.length);
+    n.cntEls = [];
     if (rows) {
       const slots = el('div', { class: 'node-slots' });
       for (let i = 0; i < rows; i++) {
         const a = def.inputs[i];
         const b = def.outputs[i];
+        const cnt = b ? el('span', { class: 'cnt' }) : null;
+        n.cntEls.push(cnt);
         slots.append(el('div', { class: 'slot-row' },
           a ? el('div', { class: 'slot in' }, sock('in', i, a.type), el('span', { class: 'sl', text: sockLabel(a.name) })) : el('div', { class: 'slot' }),
-          b ? el('div', { class: 'slot out' }, el('span', { class: 'sl', text: sockLabel(b.name) }), sock('out', i, b.type)) : null));
+          b ? el('div', { class: 'slot out' }, cnt, el('span', { class: 'sl', text: sockLabel(b.name) }), sock('out', i, b.type)) : null));
       }
       e.append(slots);
     }
     const wbox = el('div', { class: 'node-widgets' });
+    n.seps = [];
+    let group = null;
+    let advBox = null;
+    const advCount = def.widgets.filter((w) => w.adv).length;
+    const addTo = (w, we) => {
+      if (w.adv) {
+        if (!advBox) {
+          n.moreBtn = el('button', {
+            class: 'w-more',
+            onpointerdown: (ev) => ev.stopPropagation(),
+            onclick: (ev) => {
+              ev.stopPropagation();
+              n.showAdv = !n.showAdv;
+              this.updateVis(n);
+              this.redraw();
+              if (this.opts.onAdv) this.opts.onAdv(n);
+            },
+          }, icon('chevron-down', 13), el('span', { text: t('nd.advanced') }), el('span', { class: 'n', text: String(advCount) }));
+          wbox.append(n.moreBtn);
+          advBox = true;
+        }
+      }
+      if (w.group && w.group !== group) {
+        group = w.group;
+        const sep = el('div', { class: 'w-sep', text: groupLabel(w.group) });
+        sep.dataset.group = w.group;
+        sep.dataset.adv = w.adv ? '1' : '';
+        n.seps.push(sep);
+        wbox.append(sep);
+      }
+      wbox.append(we);
+    };
     for (const w of def.widgets) {
       const we = createWidget(w, n.values[w.name], (v) => {
         n.values[w.name] = v;
@@ -583,7 +625,7 @@ export class Editor {
       });
       we.dataset.name = w.name;
       n.widgets.set(w.name, we);
-      wbox.append(we);
+      addTo(w, we);
     }
     e.append(wbox);
     if (def.preview) {
@@ -599,10 +641,16 @@ export class Editor {
   }
 
   updateVis(n) {
+    const shown = new Set();
     for (const w of n.def.widgets) {
       const we = n.widgets.get(w.name);
-      if (we) we.hidden = !isVisible(w, n.values);
+      if (!we) continue;
+      const vis = isVisible(w, n.values) && (!w.adv || !!n.showAdv);
+      we.hidden = !vis;
+      if (vis && w.group) shown.add(w.group + (w.adv ? ':a' : ''));
     }
+    for (const sep of n.seps || []) sep.hidden = !shown.has(sep.dataset.group + (sep.dataset.adv ? ':a' : ''));
+    if (n.moreBtn) n.moreBtn.classList.toggle('open', !!n.showAdv);
   }
 
   applyFlags(n) {
@@ -854,6 +902,7 @@ export class Editor {
       if (n.bypass) o.bypass = true;
       if (n.collapsed) o.collapsed = true;
       if (n.title) o.title = n.title;
+      if (n.showAdv) o.adv = true;
       g.nodes.push(o);
     }
     for (const l of this.links.values()) g.links.push([l.from, l.out, l.to, l.in]);
@@ -875,7 +924,7 @@ export class Editor {
     try {
       this.clear();
       for (const nd of g.nodes || []) {
-        this.addNode(nd.type, nd.x, nd.y, nd.values, { id: Number(nd.id) || undefined, w: nd.w, bypass: nd.bypass, collapsed: nd.collapsed, title: nd.title, silent: true });
+        this.addNode(nd.type, nd.x, nd.y, nd.values, { id: Number(nd.id) || undefined, w: nd.w, bypass: nd.bypass, collapsed: nd.collapsed, title: nd.title, adv: nd.adv, silent: true });
       }
       for (const l of g.links || []) {
         if (Array.isArray(l)) this.connect(Number(l[0]), Number(l[1]), Number(l[2]), Number(l[3]), { silent: true });
@@ -994,6 +1043,9 @@ export class Editor {
       n.el.classList.remove('running', 'done', 'error');
       n.badgeEl.textContent = '';
       n.footEl.textContent = '';
+      (n.cntEls || []).forEach((c) => {
+        if (c) c.textContent = '';
+      });
       n.el.style.setProperty('--prog', '0');
       if (n.previewEl) {
         n.previewEl.textContent = '';
@@ -1042,6 +1094,9 @@ export class Editor {
     n.error = null;
     n.warnings = ev.warnings || [];
     n.badgeEl.textContent = fmtTime(ev.ms || 0);
+    (n.cntEls || []).forEach((c, i) => {
+      if (c) c.textContent = ev.counts && ev.counts[i] != null && n.def.outputs.length > 1 ? String(ev.counts[i]) : '';
+    });
     this.renderFoot(n);
     if (n.previewEl) this.renderPreview(n, (ev.outputs && ev.outputs[0]) || [], (ev.counts && ev.counts[0]) || 0);
   }

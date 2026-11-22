@@ -1,5 +1,6 @@
 // UI strings. English is the source of truth; Russian adds translations for nodes, widgets and options.
 import { NODE_DEFS } from './nodes.js';
+import { EN2, RU2, RU_TPL } from './i18n_ru.js';
 
 const en = {
   'app.tagline': 'node-based multitool for your files',
@@ -631,7 +632,8 @@ const ru = {
   'tpl.dedupe.d': 'Сохранить уникальные файлы и показать дубликаты.',
 };
 
-export const STRINGS = { en, ru: { ...en, ...ru } };
+Object.assign(en, EN2);
+export const STRINGS = { en, ru: { ...en, ...ru, ...RU2, ...RU_TPL } };
 
 let lang = 'en';
 export const getLang = () => lang;
@@ -673,8 +675,10 @@ export function nodeDesc(type) {
 }
 
 export function wLabel(w) {
-  return tr('w.' + w.name) || w.label || w.name.split('_').join(' ');
+  return (w.label && tr('l.' + w.label)) || tr('w.' + w.name) || w.label || w.name.split('_').join(' ');
 }
+
+export const groupLabel = (g) => tr('g.' + g) || g;
 
 export function optLabel(w, o) {
   const base = (w.labels && w.labels[o]) || String(o);
