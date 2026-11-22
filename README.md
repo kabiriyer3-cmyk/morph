@@ -3,12 +3,12 @@
 </p>
 
 <p align='center'>
-  <a href='https://github.com/kabiriyer3-cmyk/morph/releases/latest'><img alt='Release' src='https://img.shields.io/github/v/release/kabiriyer3-cmyk/morph?style=flat-square&color=2f6ff2'></a>
+  <a href='https://github.com/kabiriyer3-cmyk/morph/releases/latest'><img alt='Release' src='https://img.shields.io/github/v/release/kabiriyer3-cmyk/morph?style=flat-square&color=3b7bff'></a>
   <a href='https://github.com/kabiriyer3-cmyk/morph/actions/workflows/ci.yml'><img alt='Build' src='https://img.shields.io/github/actions/workflow/status/kabiriyer3-cmyk/morph/ci.yml?branch=main&style=flat-square&label=build'></a>
-  <a href='https://github.com/kabiriyer3-cmyk/morph/releases'><img alt='Downloads' src='https://img.shields.io/github/downloads/kabiriyer3-cmyk/morph/total?style=flat-square&color=1259e0'></a>
-  <img alt='Platforms' src='https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-0b1530?style=flat-square'>
-  <img alt='Nodes' src='https://img.shields.io/badge/nodes-100-4a92ff?style=flat-square'>
-  <a href='LICENSE'><img alt='License' src='https://img.shields.io/badge/license-MIT-4a92ff?style=flat-square'></a>
+  <a href='https://github.com/kabiriyer3-cmyk/morph/releases'><img alt='Downloads' src='https://img.shields.io/github/downloads/kabiriyer3-cmyk/morph/total?style=flat-square&color=3b7bff'></a>
+  <img alt='Platforms' src='https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-18181b?style=flat-square'>
+  <img alt='Nodes' src='https://img.shields.io/badge/nodes-100-3b7bff?style=flat-square'>
+  <a href='LICENSE'><img alt='License' src='https://img.shields.io/badge/license-MIT-3b7bff?style=flat-square'></a>
 </p>
 
 <p align='center'><b>English</b> · <a href='README.ru.md'>Русский</a></p>
@@ -19,14 +19,19 @@
 
 ## Highlights
 
+- **Studio interface.** A strict graphite UI in the spirit of Figma and modern design tools: hairline borders instead of glow, Inter typography, a labeled tool rail, Figma-style tabs and a floating dock with **Add node** and zoom. The cobalt accent only marks selection and focus.
+- **Dashboard.** Morph opens on a home screen with quick actions, 14 days of activity (runs, files, success rate, processing time), recent runs, tool status and featured templates with graph previews. Drop files on it to convert them right away.
+- **Boot animation.** Dots in 3D space gather into a rotating sphere and morph into the Morph mark. Click to skip it, or turn it off in Settings.
 - **Convert anything.** The *Convert Anything* node and the Quick convert dialog know 70+ target formats and pick the right engine for every file: MP4, MKV, WebM, MOV, AVI and 9 more video containers, 13 audio formats, 12 image formats, Word, Excel, PowerPoint, PDF, CSV, JSON, 3D models and archives.
 - **100 nodes with deep settings.** Codecs and CRF, bitrate or target file size, NVENC / QSV / AMF hardware encoding, color grading, subtitles, loudness and EQ, styled Excel output, table filters and math, PDF page tools, image effects, QR codes and much more. Rarely used options sit under *Advanced settings*, so nodes stay compact.
 - **Quick convert.** `Ctrl+Shift+C`: drop files, pick a format, press **Convert**. Open the result as a workflow if you want to tweak it.
 - **Command palette.** `Ctrl+K` finds any command, node, template or target format.
 - **Tools in one click.** FFmpeg and Pandoc install from the **Tools** panel. LibreOffice, Ghostscript, Poppler and 7-Zip are detected automatically.
 - **Previews everywhere.** Thumbnails inside the graph, a before / after slider for images, a video and audio player, an interactive 3D viewer, spreadsheet tables with sheet tabs and PDF details.
-- **A polished editor.** Category colored nodes, minimap, favorites and recent nodes, 23 templates, six accent colors, dots or lines grid, English and Russian UI.
+- **A polished editor.** Calm nodes with a tinted icon chip, thin links and a clear selection ring, a workflow overview in the inspector, minimap, favorites and recent nodes, 23 templates, six accent colors, dots or lines grid, English and Russian UI.
 - **Fast, private, safe.** Rust backend that uses every CPU core. No accounts, no telemetry, nothing leaves your computer. Nodes work in a temporary folder and only **Save** writes to your disk.
+
+<p align='center'><img src='docs/dashboard.png' alt='Morph dashboard' width='100%'></p>
 
 ## Download
 
@@ -45,17 +50,17 @@ Install the `.deb` with `sudo apt install ./Morph_*_amd64.deb`, the `.rpm` with 
 
 **Convert files in two clicks**
 
-1. Press **Quick convert** in the top bar or `Ctrl+Shift+C`.
+1. Press **Quick convert** on the dashboard, in the top bar or `Ctrl+Shift+C`.
 2. Drop files or folders into the dialog and pick a format, for example **MP4**, **XLSX** or **PDF**. Formats that do not fit your files are dimmed.
 3. Press **Convert**. Results go next to the originals or into a folder of your choice.
 
 **Build a workflow**
 
-1. Open Morph. The **Photos for the web** template is loaded.
+1. Open Morph. On the dashboard press **Continue editing**: the canvas opens with the **Photos for the web** template. Or pick another template right there.
 2. Drop a folder onto the canvas. The files go straight into the **Load Files** node.
 3. Press **Run** or `Ctrl+Enter`. Thumbnails appear in **Preview** and the results land in `~/Morph Output` (change it in the **Save** node or in Settings).
 
-Pick another template in the sidebar, press `Tab` or double-click the canvas to add a node, or press `Ctrl+K` to search everything.
+Pick another template in the sidebar, press `Tab` or double-click the canvas to add a node, or press `Ctrl+K` to search everything. If you prefer to skip the dashboard, set *Settings, Start screen* to **Canvas**.
 
 ## What converts to what
 
@@ -148,23 +153,24 @@ On Windows you need the Visual Studio C++ Build Tools and WebView2 (preinstalled
 git clone https://github.com/kabiriyer3-cmyk/morph.git
 cd morph
 npm install
+node scripts/fetch-fonts.mjs   # optional: the Inter UI font, release builds fetch it automatically
 npm run dev     # start the app
 npm run build   # installers land in src-tauri/target/release/bundle
 ```
 
-The UI is plain HTML, CSS and JavaScript in `src/` with no bundler. You can try it in a browser with built-in demo data:
+Without the font file the UI falls back to the system font. The UI is plain HTML, CSS and JavaScript in `src/` with no bundler. You can try it in a browser with built-in demo data:
 
 ```bash
 python3 -m http.server 8080 --directory src
 # then open http://localhost:8080/?demo=1
 ```
 
-`npm run check` runs the static frontend checks and `npm run smoke` renders the demo in headless Chrome.
+Add `&view=editor` to the address to open the canvas instead of the dashboard, or `&boot=0` to skip the boot animation. `npm run check` runs the static frontend checks and `npm run smoke` renders the demo in headless Chrome.
 
 ## Project layout
 
 ```
-src/                 UI: index.html, css/, js/ (editor, widgets, inspector, quick convert, palette, minimap, tools panel, 3D viewer, i18n)
+src/                 UI: index.html, css/, fonts/, js/ (dashboard, boot animation, editor, widgets, inspector, quick convert, palette, minimap, tools panel, 3D viewer, i18n)
 src-tauri/           Rust backend (Tauri 2)
   src/engine.rs      graph executor, progress events, work folders
   src/tools.rs       external tool detection, src/installer.rs one-click FFmpeg / Pandoc install
@@ -172,7 +178,7 @@ src-tauri/           Rust backend (Tauri 2)
   src/mesh.rs        mesh loading, writing, welding and decimation
 assets/              logo, icon and banner (app icons are generated from assets/icon.svg at build time)
 .github/actions/     CI and release steps used by the workflows
-scripts/             frontend checks, smoke test, cargo error annotations
+scripts/             frontend checks, smoke test, font download, cargo error annotations
 ```
 
 ## Releasing
@@ -191,6 +197,8 @@ You can also push a `vX.Y.Z` tag or start **Release** manually in the Actions ta
 **Video nodes say FFmpeg was not found.** Open the **Tools** panel and press **Install** next to FFmpeg, or install it yourself (see [External tools](#external-tools)) and press **Detect again**.
 
 **Can I convert a video or an Excel file to another format?** Yes. Use Quick convert, the *Convert Anything* node, or the dedicated *Convert Video* and *Convert Spreadsheet* nodes for full control.
+
+**How do I turn off the boot animation?** *Settings, Boot animation*. It also never plays when the system asks for reduced motion.
 
 **Where do intermediate files go?** Into `morph/runs` inside the system temp folder. Only the last few runs are kept, and *Settings, Clear cache* removes them.
 
