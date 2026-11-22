@@ -38,6 +38,7 @@ export function openPalette(ctx) {
   const r = ctx.running();
   cmd('run', r ? 'stop' : 'play', r ? t('cmd.cancel') : t('cmd.run'), ctx.run, 'Ctrl+⏎');
   cmd('quick', 'bolt', t('cmd.quick'), () => ctx.quick(), 'Ctrl+⇧+C');
+  cmd('home', 'dashboard', t('cmd.home'), () => ctx.home());
   cmd('new', 'file-plus', t('cmd.new'), ctx.newWf);
   cmd('open', 'folder-open', t('cmd.open'), ctx.open, 'Ctrl+O');
   cmd('save', 'save', t('cmd.save'), ctx.save, 'Ctrl+S');
