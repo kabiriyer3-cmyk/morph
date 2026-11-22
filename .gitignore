@@ -7,3 +7,5 @@ cargo.err
 *.log
 .DS_Store
 Thumbs.db
+src/fonts/*.woff2
+src/fonts/*.txt

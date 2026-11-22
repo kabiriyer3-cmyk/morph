@@ -21,6 +21,9 @@ runs:
     - name: npm install
       shell: bash
       run: npm install --no-audit --no-fund
+    - name: Fonts
+      shell: bash
+      run: node scripts/fetch-fonts.mjs
     - uses: tauri-apps/tauri-action@v1
       env:
         GITHUB_TOKEN: ${{ github.token }}
