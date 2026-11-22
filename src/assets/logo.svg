@@ -1,0 +1,1 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='60' y1='406' x2='452' y2='106' gradientUnits='userSpaceOnUse'><stop offset='0' stop-color='#3D7BFF'/><stop offset='1' stop-color='#A25BFF'/></linearGradient></defs><path fill='url(#g)' d='M60 406V106H333A119 119 0 0 1 452 225V406H368V225A35 35 0 0 0 298 225V406H214V190H144V406Z'/></svg>
