@@ -25,7 +25,8 @@ png = "0.17"
 color_quant = "1"
 resvg = "0.45"
 gltf = "1"
-zip = { version = "2", default-features = false, features = ["deflate", "bzip2", "zstd"] }
+# zip 2.6 changed ZipFile generics (breaks calamine 0.26), keep the 2.2..2.4 line
+zip = { version = ">=2.2, <2.5", default-features = false, features = ["deflate", "bzip2", "zstd"] }
 tar = "0.4"
 flate2 = "1"
 zstd = "0.13"
