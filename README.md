@@ -3,11 +3,11 @@
 </p>
 
 <p align='center'>
-  <a href='https://github.com/kabiriyer3-cmyk/morph/releases/latest'><img alt='Release' src='https://img.shields.io/github/v/release/kabiriyer3-cmyk/morph?style=flat-square&color=6a6cff'></a>
+  <a href='https://github.com/kabiriyer3-cmyk/morph/releases/latest'><img alt='Release' src='https://img.shields.io/github/v/release/kabiriyer3-cmyk/morph?style=flat-square&color=2f6ff2'></a>
   <a href='https://github.com/kabiriyer3-cmyk/morph/actions/workflows/ci.yml'><img alt='Build' src='https://img.shields.io/github/actions/workflow/status/kabiriyer3-cmyk/morph/ci.yml?branch=main&style=flat-square&label=build'></a>
-  <a href='https://github.com/kabiriyer3-cmyk/morph/releases'><img alt='Downloads' src='https://img.shields.io/github/downloads/kabiriyer3-cmyk/morph/total?style=flat-square&color=3d7bff'></a>
-  <img alt='Platforms' src='https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-2b2b31?style=flat-square'>
-  <a href='LICENSE'><img alt='License' src='https://img.shields.io/badge/license-MIT-a25bff?style=flat-square'></a>
+  <a href='https://github.com/kabiriyer3-cmyk/morph/releases'><img alt='Downloads' src='https://img.shields.io/github/downloads/kabiriyer3-cmyk/morph/total?style=flat-square&color=1259e0'></a>
+  <img alt='Platforms' src='https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-0b1530?style=flat-square'>
+  <a href='LICENSE'><img alt='License' src='https://img.shields.io/badge/license-MIT-4a92ff?style=flat-square'></a>
 </p>
 
 <p align='center'><b>English</b> · <a href='README.ru.md'>Русский</a></p>
