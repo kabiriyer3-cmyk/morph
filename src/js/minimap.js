@@ -89,7 +89,7 @@ export class Minimap {
     const ox = pad + ((W - pad * 2) - (x1 - x0) * s) / 2 - x0 * s;
     const oy = pad + ((H - pad * 2) - (y1 - y0) * s) / 2 - y0 * s;
     this.box = { s, ox, oy };
-    g.strokeStyle = 'rgba(160, 175, 205, 0.28)';
+    g.strokeStyle = 'rgba(255, 255, 255, 0.16)';
     g.lineWidth = 1;
     for (const l of ed.links.values()) {
       const a = ed.nodes.get(l.from);
@@ -108,14 +108,14 @@ export class Minimap {
       const y = oy + n.y * s;
       const w = Math.max(3, ed.nodeW(n) * s);
       const h = Math.max(3, (n.el.offsetHeight || 120) * s);
-      g.fillStyle = ed.sel.has(n.id) ? 'rgba(110, 162, 255, 0.55)' : 'rgba(40, 47, 60, 0.95)';
+      g.fillStyle = ed.sel.has(n.id) ? 'rgba(59, 123, 255, 0.55)' : 'rgba(46, 46, 52, 0.95)';
       g.fillRect(x, y, w, h);
       g.fillStyle = n.status === 'error' ? '#ff5d5d' : n.def.color || cat.color;
       g.fillRect(x, y, w, Math.max(2, 4 * s * 4));
     }
-    g.strokeStyle = 'rgba(232, 237, 246, 0.85)';
-    g.lineWidth = 1.5;
-    g.fillStyle = 'rgba(110, 162, 255, 0.07)';
+    g.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+    g.lineWidth = 1;
+    g.fillStyle = 'rgba(255, 255, 255, 0.035)';
     const rx = ox + vx0 * s;
     const ry = oy + vy0 * s;
     g.fillRect(rx, ry, (vx1 - vx0) * s, (vy1 - vy0) * s);

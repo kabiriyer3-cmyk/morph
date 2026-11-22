@@ -3,7 +3,7 @@
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='theme-color' content='#0b0e14'>
+<meta name='theme-color' content='#0b0b0d'>
 <title>Morph</title>
 <link rel='icon' type='image/svg+xml' href='assets/logo.svg'>
 <link rel='stylesheet' href='css/app.css'>
@@ -38,13 +38,35 @@
     var pre = document.getElementById('boot-errors');
     if (pre) pre.addEventListener('click', function () { pre.hidden = true; });
   });
+  // The boot animation is decided before the first paint so it never flashes when it is off.
+  try {
+    var q2 = location.search;
+    var s = JSON.parse(localStorage.getItem('morph.settings') || '{}') || {};
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var off = /[?&]smoke=1/.test(q2) || /[?&]boot=0/.test(q2) || s.boot === false || s.motion === false || (reduce && !/[?&]boot=1/.test(q2));
+    document.documentElement.setAttribute('data-boot', off ? 'off' : 'on');
+  } catch (e) {
+    document.documentElement.setAttribute('data-boot', 'on');
+  }
 })();
 </script>
 </head>
 <body>
+<div id='boot' aria-hidden='true'>
+  <canvas id='boot-fx'></canvas>
+  <div class='boot-logo'>
+    <svg class='boot-mark' viewBox='86 86 340 340' aria-hidden='true'><path fill='currentColor' d='M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z'/></svg>
+    <img class='boot-word' src='assets/wordmark.svg' alt=''>
+  </div>
+  <div class='boot-foot'><span class='boot-step'></span><div class='boot-bar'><i></i></div><span class='boot-ver'></span></div>
+</div>
 <div id='app'>
   <header id='topbar'>
-    <div class='brand'><img src='assets/logo.svg' alt=''><img class='wordmark' src='assets/wordmark.svg' alt='morph'></div>
+    <button class='brand' id='brand' data-i18n-title='top.home'><svg class='mark' viewBox='86 86 340 340' aria-hidden='true'><path fill='currentColor' d='M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z'/></svg></button>
+    <div class='tabs' role='tablist'>
+      <button class='tab' id='tab-home' role='tab'><span class='ico' data-icon='dashboard'></span><span class='tab-l' data-i18n='top.home'>Dashboard</span></button>
+      <div class='tab' id='tab-editor' role='tab'><span class='ico' data-icon='wire'></span><input id='wf-name' spellcheck='false' autocomplete='off' data-i18n-placeholder='top.untitled' data-i18n-title='top.name'></div>
+    </div>
     <div class='tb-group'>
       <button class='tb-btn' id='btn-new' data-icon='file-plus' data-i18n-title='top.new'></button>
       <button class='tb-btn' id='btn-open' data-icon='folder-open' data-i18n-title='top.open'></button>
@@ -54,12 +76,6 @@
       <button class='tb-btn' id='btn-undo' data-icon='undo' data-i18n-title='top.undo'></button>
       <button class='tb-btn' id='btn-redo' data-icon='redo' data-i18n-title='top.redo'></button>
     </div>
-    <div class='tb-group'>
-      <button class='tb-btn' id='btn-fit' data-icon='fit' data-i18n-title='top.fit'></button>
-      <button class='tb-btn' id='btn-arrange' data-icon='arrange' data-i18n-title='top.arrange'></button>
-      <button class='tb-btn' id='btn-minimap' data-icon='map' data-i18n-title='top.minimap'></button>
-    </div>
-    <input id='wf-name' spellcheck='false' autocomplete='off' data-i18n-placeholder='top.untitled' data-i18n-title='top.name'>
     <div class='tb-spacer'></div>
     <button class='tb-pill tb-search' id='btn-palette' data-i18n-title='top.palette'><span class='ico' data-icon='search'></span><span data-i18n='top.palette_ph'>Search or run a command</span><kbd>Ctrl K</kbd></button>
     <button class='tb-pill' id='btn-quick' data-i18n-title='top.quick_t'><span class='ico' data-icon='bolt'></span><span class='tbl' data-i18n='top.quick'>Quick convert</span></button>
@@ -68,29 +84,37 @@
   </header>
   <div id='main'>
     <nav id='sidebar'>
-      <button class='sb-btn' data-panel='library' data-icon='library' data-tip-key='side.library'></button>
-      <button class='sb-btn' data-panel='templates' data-icon='templates' data-tip-key='side.templates'></button>
-      <button class='sb-btn' data-panel='history' data-icon='history' data-tip-key='side.history'></button>
+      <button class='sb-btn' data-panel='library' data-icon='library' data-label-key='rail.library' data-i18n-title='side.library'></button>
+      <button class='sb-btn' data-panel='templates' data-icon='templates' data-label-key='rail.templates' data-i18n-title='side.templates'></button>
+      <button class='sb-btn' data-panel='history' data-icon='history' data-label-key='rail.history' data-i18n-title='side.history'></button>
       <div class='sb-sep'></div>
-      <button class='sb-btn' id='sb-quick' data-icon='bolt' data-tip-key='top.quick'></button>
-      <button class='sb-btn' data-panel='tools' data-icon='package' data-tip-key='side.tools'></button>
+      <button class='sb-btn' id='sb-quick' data-icon='bolt' data-label-key='rail.quick' data-i18n-title='top.quick'></button>
+      <button class='sb-btn' data-panel='tools' data-icon='package' data-label-key='rail.tools' data-i18n-title='side.tools'></button>
       <div class='sb-spacer'></div>
-      <button class='sb-btn' data-panel='settings' data-icon='settings' data-tip-key='side.settings'></button>
-      <button class='sb-btn' id='btn-help' data-icon='help' data-tip-key='side.help'></button>
+      <button class='sb-btn' data-panel='settings' data-icon='settings' data-label-key='rail.settings' data-i18n-title='side.settings'></button>
+      <button class='sb-btn' id='btn-help' data-icon='help' data-label-key='rail.help' data-i18n-title='side.help'></button>
     </nav>
     <aside id='panel' hidden>
       <div class='panel-head'><h2 id='panel-title'></h2><span class='count' id='panel-count'></span><button class='icon-btn' id='panel-close' data-icon='x'></button></div>
       <div id='panel-body'></div>
     </aside>
+    <section id='home' hidden></section>
     <section id='canvas-wrap'>
       <div id='canvas' tabindex='-1'></div>
       <div id='welcome' hidden></div>
       <div id='minimap' hidden><canvas></canvas></div>
       <div id='drop-hint' hidden><div><span data-icon='upload'></span><b data-i18n='drop.hint'></b></div></div>
-      <div id='zoom-tools'>
-        <button class='icon-btn' id='zoom-out' data-icon='minus'></button>
-        <button class='icon-btn' id='zoom-label'>100%</button>
-        <button class='icon-btn' id='zoom-in' data-icon='plus'></button>
+      <div id='zoom-tools' class='dock'>
+        <button class='dock-add' id='dock-add' data-i18n-title='dock.add_t'><span class='ico' data-icon='plus'></span><span data-i18n='dock.add'>Add node</span><kbd>Tab</kbd></button>
+        <span class='sep'></span>
+        <button class='icon-btn' id='dock-note' data-icon='note' data-i18n-title='dock.note'></button>
+        <button class='icon-btn' id='btn-arrange' data-icon='arrange' data-i18n-title='top.arrange'></button>
+        <button class='icon-btn' id='btn-fit' data-icon='fit' data-i18n-title='top.fit'></button>
+        <button class='icon-btn' id='btn-minimap' data-icon='map' data-i18n-title='top.minimap'></button>
+        <span class='sep'></span>
+        <button class='icon-btn' id='zoom-out' data-icon='minus' data-i18n-title='dock.zoom_out'></button>
+        <button class='icon-btn' id='zoom-label' data-i18n-title='dock.zoom_fit'>100%</button>
+        <button class='icon-btn' id='zoom-in' data-icon='plus' data-i18n-title='dock.zoom_in'></button>
       </div>
     </section>
     <aside id='inspector'></aside>
