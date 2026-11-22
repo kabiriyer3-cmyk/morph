@@ -8,9 +8,10 @@ export const DEMO = !(T && T.core) || params.has('demo');
 export const SMOKE = params.has('smoke');
 export const DEMO_ROOT = 'C:/Users/demo/Desktop/Morph demo';
 
-let tools = { ffmpeg: '', ffprobe: '', soffice: '', pandoc: '' };
+const TOOL_KEYS = ['ffmpeg', 'ffprobe', 'soffice', 'pandoc', 'gs', 'sevenzip'];
+let tools = Object.fromEntries(TOOL_KEYS.map((k) => [k, '']));
 export function setToolSettings(s) {
-  tools = { ffmpeg: s.ffmpeg || '', ffprobe: s.ffprobe || '', soffice: s.soffice || '', pandoc: s.pandoc || '' };
+  tools = Object.fromEntries(TOOL_KEYS.map((k) => [k, (s && s[k]) || '']));
 }
 export const toolSettings = () => ({ ...tools });
 
@@ -181,7 +182,10 @@ const KIND = {
   m4a: 'audio', mp3: 'audio', opus: 'audio', ogg: 'audio', flac: 'audio', wav: 'audio', alac: 'audio',
   glb: 'mesh', gltf: 'mesh', obj: 'mesh', stl: 'mesh', ply: 'mesh', off: 'mesh',
   zip: 'archive', '7z': 'archive', tar: 'archive', gz: 'archive', zst: 'archive', xz: 'archive', bz2: 'archive',
-  json: 'data', yaml: 'data', yml: 'data', toml: 'data', csv: 'data', tsv: 'data', ndjson: 'data',
+  json: 'data', yaml: 'data', yml: 'data', toml: 'data', csv: 'data', tsv: 'data', ndjson: 'data', xml: 'data',
+  xls: 'doc', xlsm: 'doc', doc: 'doc', rtf: 'doc', ppt: 'doc', md: 'doc', aiff: 'audio', wma: 'audio', aac: 'audio', ac3: 'audio', m4r: 'audio',
+  m4v: 'video', flv: 'video', wmv: 'video', mpg: 'video', ts: 'video', m2ts: 'video', '3gp': 'video', ogv: 'video', mxf: 'video',
+  heic: 'image', jxl: 'image', psd: 'image', ppm: 'image', exr: 'image', rar: 'archive', iso: 'archive', srt: 'text', sql: 'text', css: 'text', b64: 'text',
   docx: 'doc', odt: 'doc', pdf: 'doc', xlsx: 'doc', ods: 'doc', pptx: 'doc', odp: 'doc', html: 'doc', epub: 'doc',
   md: 'text', txt: 'text', rst: 'text', tex: 'text',
 };
@@ -195,7 +199,8 @@ const DEMO_LIST = [
   ['Photos', 'beach.jpg', 4812000], ['Photos', 'mountains.png', 9634000], ['Photos', 'city-night.jpg', 3921000],
   ['Photos', 'forest.jpg', 5230000], ['Photos', 'sunset.jpg', 2875000], ['Photos', 'logo.svg', 14200],
   ['Clips', 'trip.mp4', 184300000], ['Clips', 'drone.mov', 412700000], ['Audio', 'voice-memo.m4a', 5320000],
-  ['Models', 'helmet.glb', 3720000], ['Docs', 'report.docx', 842000], ['Data', 'config.json', 4200],
+  ['Models', 'helmet.glb', 3720000], ['Docs', 'report.docx', 842000], ['Docs', 'budget.xlsx', 48200], ['Docs', 'manual.pdf', 2380000],
+  ['Data', 'config.json', 4200],
 ];
 const DEMO_FILES = DEMO_LIST.map(([dir, name, size]) => {
   const path = DEMO_ROOT + '/' + dir + '/' + name;
@@ -368,6 +373,33 @@ const MAP = {
   'doc.office': ['doc', (v) => v.format, () => 0.7],
   'doc.pandoc': ['doc,text', (v) => v.format, () => 0.9],
   'files.rename': ['', null, () => 1],
+  'convert.any': ['', (v, f) => v.to || f.ext, (v, f) => (f.kind === 'video' ? 0.35 : f.kind === 'audio' ? 0.6 : 0.8)],
+  'video.compress': ['video', () => 'mp4', (v, f) => Math.min(1, 9.5e6 / Math.max(1, f.size))],
+  'video.reframe': ['video', null, () => 0.6],
+  'video.filters': ['video', null, () => 0.95],
+  'video.fx': ['video', null, () => 1],
+  'video.framerate': ['video', null, () => 1.3],
+  'video.watermark': ['video', null, () => 1.02],
+  'video.subtitles': ['video', null, () => 1],
+  'audio.fx': ['audio', null, () => 1],
+  'audio.silence': ['audio', null, () => 0.85],
+  'audio.tags': ['audio', null, () => 1],
+  'image.effects': ['image', null, () => 0.9],
+  'image.text': ['image', null, () => 1.01],
+  'image.frame': ['image', null, () => 1.05],
+  'image.remove_bg': ['image', () => 'png', () => 1.3],
+  'files.clean_names': ['', null, () => 1],
+  'files.organize': ['', null, () => 1],
+  'files.sort': ['', null, () => 1],
+  'sheet.convert': ['doc,data', (v) => v.format || 'xlsx', () => 1.1],
+  'sheet.tools': ['doc,data', null, () => 0.8],
+  'doc.markdown': ['doc,text', () => 'html', () => 1.6],
+  'doc.text': ['doc', () => 'txt', () => 0.1],
+  'pdf.compress': ['doc', null, () => 0.45],
+  'pdf.pages': ['doc', null, () => 0.7],
+  'text.lines': ['text,data', null, () => 0.9],
+  'data.json': ['data', null, () => 0.9],
+  'data.encode': ['', null, () => 1.34],
 };
 
 function mockOp(n, inputs) {
@@ -433,6 +465,22 @@ function mockOp(n, inputs) {
       if (v.mode === 'per-file') return [all.map((f) => derive(f, n.id, stemOf(f.name) + '.' + fmt, 'archive', f.size * 0.7))];
       return [[single(n.id, (v.name || 'archive') + '.' + fmt, 'archive', sum(all) * 0.72)]];
     }
+    case 'pdf.merge': {
+      const pdfs = all.filter((f) => f.ext === 'pdf');
+      return [[single(n.id, (v.name || 'merged') + '.pdf', 'doc', sum(pdfs) || 1200000)]];
+    }
+    case 'pdf.render':
+      return [all.flatMap((f) => (f.ext !== 'pdf' ? [] : [1, 2, 3, 4].map((i) => derive(f, n.id, stemOf(f.name) + '_' + String(i).padStart(3, '0') + '.' + (v.format || 'png'), 'image', 380000))))];
+    case 'sheet.merge':
+      return [[single(n.id, (v.name || 'merged') + '.' + (v.format || 'xlsx'), 'doc', sum(all) * 0.9)]];
+    case 'image.collage':
+      return [[single(n.id, (v.name || 'collage') + '.' + (v.format || 'jpg'), 'image', 900000)]];
+    case 'video.thumbs':
+      return [all.filter((f) => f.kind === 'video').map((f) => derive(f, n.id, stemOf(f.name) + '_thumbs.' + (v.format || 'jpg'), 'image', 520000))];
+    case 'video.slideshow':
+      return [[single(n.id, (v.name || 'slideshow') + '.' + (v.format || 'mp4'), 'video', 24000000)]];
+    case 'media.info':
+      return [all, [single(n.id, 'media-report.' + (v.format || 'csv'), 'data', 2200)]];
     case 'archive.extract':
       return [all.flatMap((f) => (f.kind === 'archive' ? DEMO_FILES.slice(0, 4).map((d) => derive(f, n.id, d.name, d.kind, d.size)) : [f]))];
     default: {
@@ -517,7 +565,7 @@ async function mock(cmd, a) {
   await new Promise((r) => setTimeout(r, 10));
   switch (cmd) {
     case 'system_info':
-      return { os: 'demo', arch: 'web', version: '0.1.0', cpus: navigator.hardwareConcurrency || 8, temp: 'C:/Users/demo/AppData/Local/Temp/morph', home: 'C:/Users/demo' };
+      return { os: 'demo', arch: 'web', version: '0.2.0', cpus: navigator.hardwareConcurrency || 8, temp: 'C:/Users/demo/AppData/Local/Temp/morph', home: 'C:/Users/demo' };
     case 'detect_tools':
       return {
         ffmpeg: { path: 'ffmpeg', version: 'ffmpeg version 7.1 (demo)' },
@@ -525,6 +573,38 @@ async function mock(cmd, a) {
         soffice: null,
         pandoc: { path: 'pandoc', version: 'pandoc 3.5 (demo)' },
       };
+    case 'tool_status': {
+      const dir = 'C:/Users/demo/AppData/Local/Morph/tools';
+      const tool = (path, version, managed, installable) => ({ path, version, managed, installable });
+      return {
+        dir,
+        tools: {
+          ffmpeg: tool(dir + '/ffmpeg/bin/ffmpeg.exe', 'ffmpeg version 7.1-full (demo)', true, true),
+          ffprobe: tool(dir + '/ffmpeg/bin/ffprobe.exe', 'ffprobe version 7.1-full (demo)', true, true),
+          pandoc: tool('C:/Program Files/Pandoc/pandoc.exe', 'pandoc 3.5', false, true),
+          soffice: tool(null, null, false, false),
+          gs: tool(null, null, false, false),
+          pdftoppm: tool(null, null, false, false),
+          sevenzip: tool('C:/Program Files/7-Zip/7z.exe', null, false, false),
+        },
+      };
+    }
+    case 'install_tool':
+    case 'remove_tool':
+    case 'open_tools_folder':
+      return null;
+    case 'sheet_preview': {
+      const head = ['Month', 'Revenue', 'Costs', 'Profit', 'Growth'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const rows = [head, ...months.map((m, i) => {
+        const r = 42000 + i * 3100 + (i % 3) * 1800;
+        const c = 27000 + i * 1400;
+        return [m, String(r), String(c), String(r - c), (i ? ((r / (42000 + (i - 1) * 3100) - 1) * 100).toFixed(1) + '%' : '')];
+      })];
+      return { sheets: ['2026', 'Forecast', 'Notes'], sheet: a.sheet || '2026', rows, total_rows: rows.length, cols: head.length };
+    }
+    case 'pdf_info':
+      return { pages: 24, version: '1.7', encrypted: false, page_mm: [210, 297], title: 'User manual', author: 'Morph demo' };
     case 'scan_paths':
       return DEMO_FILES.map((f) => ({ ...f }));
     case 'thumbnail': {
