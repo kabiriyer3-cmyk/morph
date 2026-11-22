@@ -5,6 +5,7 @@ import { invoke, fileSrc, loadThumb, DEMO, toolSettings } from './api.js';
 import { createViewer } from './viewer3d.js';
 import { CATEGORIES, typeColor } from './nodes.js';
 import { paint } from './colors.js';
+import { ago } from './home.js';
 
 const WEB_IMG = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp', 'avif', 'ico']);
 const WEB_VID = new Set(['mp4', 'webm', 'mov', 'm4v', 'ogv']);
@@ -41,11 +42,29 @@ export class Inspector {
   showEmpty() {
     this.reset();
     this.current = null;
-    const tips = [['upload', 'insp.tip1'], ['wire', 'insp.tip2'], ['search', 'insp.tip3'], ['play', 'insp.tip4']];
-    this.root.append(el('div', { class: 'insp-empty' },
-      el('img', { src: 'assets/logo.svg', alt: '' }),
-      el('div', { text: t('insp.empty') }),
-      el('ul', {}, tips.map(([ic, k]) => el('li', {}, icon(ic, 14), el('span', { text: t(k) }))))));
+    const ed = this.ctx.editor;
+    const nodes = ed ? [...ed.nodes.values()] : [];
+    const links = ed && ed.links ? ed.links.size : 0;
+    const outs = nodes.filter((n) => n.def && n.def.output).length;
+    const cats = [...new Set(nodes.map((n) => n.def && n.def.cat).filter(Boolean))];
+    const name = (this.ctx.name && this.ctx.name()) || t('top.untitled');
+    const last = this.ctx.last ? this.ctx.last() : null;
+    const stat = (v, k) => el('div', {}, el('b', { text: String(v) }), el('span', { text: t(k) }));
+    const tips = [['plus', 'iw.t_add', 'Tab'], ['search', 'iw.t_palette', 'Ctrl K'], ['bolt', 'iw.t_quick', 'Ctrl ⇧ C'], ['play', 'iw.t_run', 'Ctrl ⏎'], ['wire', 'iw.t_connect', null], ['upload', 'iw.t_drop', null]];
+    const box = el('div', { class: 'insp-empty' },
+      el('div', { class: 'iw-head' }, el('span', { class: 'hi' }, icon('wire', 15)), el('div', { class: 't' }, el('b', { text: name }), el('small', { text: t('iw.workflow') }))),
+      el('div', { class: 'iw-stats' }, stat(nodes.length, 'iw.nodes'), stat(links, 'iw.links'), stat(outs, 'iw.outputs')),
+      cats.length ? el('div', { class: 'iw-cats' }, cats.map((c) => el('span', { style: { '--c': (CATEGORIES[c] || CATEGORIES.util).color }, text: catLabel(c) }))) : null);
+    if (last && last.at) {
+      const st = last.cancelled ? 'cancel' : last.ok ? 'ok' : 'fail';
+      box.append(el('div', { class: 'iw-sec' }, el('h4', { text: t('iw.last') }),
+        el('div', { class: 'iw-run ' + st, title: last.error || '' }, el('i'),
+          el('b', { text: last.name || t('top.untitled') }),
+          el('span', { text: [ago(last.at), fmtTime(last.ms || 0), last.files != null ? t('queue.files', { n: last.files }) : null].filter(Boolean).join(' · ') }))));
+    }
+    box.append(el('div', { class: 'iw-sec' }, el('h4', { text: t('iw.tips') }),
+      el('ul', { class: 'iw-tips' }, tips.map(([ic, k, key]) => el('li', {}, icon(ic, 14), el('span', { text: t(k) }), key ? el('kbd', { text: key }) : null)))));
+    this.root.append(box);
   }
 
   refresh() {
