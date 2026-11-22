@@ -1,8 +1,11 @@
 // App bootstrap: panels, menus, keyboard, OS drops and the run lifecycle.
+import './i18n_v4.js';
+import './nodes_v4.js';
 import { DEMO, SMOKE, DEMO_ROOT, invoke, listen, pickFiles, saveDialog, onDrop, setToolSettings, toolSettings, openExternal, downloadText, pickLocalText } from './api.js';
 import { Editor } from './editor.js';
 import { Inspector } from './inspector.js';
-import { NODE_DEFS, CATEGORIES, compatible, NODE_COUNT } from './nodes.js';
+import { NODE_DEFS, CATEGORIES, compatible } from './nodes.js';
+import { NODE_TOTAL as NODE_COUNT } from './nodes_v4.js';
 import { TEMPLATES, DEFAULT_TEMPLATE, TEMPLATE_GROUPS } from './templates.js';
 import { Minimap } from './minimap.js';
 import { QuickConvert } from './quick.js';
@@ -48,7 +51,7 @@ let inspector = null;
 let wfName = '';
 let tools = {};
 let run = null;
-let version = '0.3.0';
+let version = '0.4.0';
 let panel = null;
 let searchBox = null;
 let placed = 0;
@@ -221,6 +224,7 @@ function setView(v, o = {}) {
   if (view === 'editor') rememberCanvas();
   view = next;
   document.body.dataset.view = next;
+  syncRail();
   document.body.classList.remove('home-panel');
   $('#home').hidden = next !== 'home';
   $('#tab-home').classList.toggle('on', next === 'home');
@@ -329,6 +333,7 @@ async function boot() {
     b.append(el('span', { class: 'sb-l', text: t(b.dataset.labelKey) }));
   });
   $('#st-ver').textContent = 'v' + version + (DEMO ? ' · ' + t('st.demo') : '');
+  $('#sb-ver').textContent = 'Studio · v' + version;
   setMsg(t('st.ready'));
   setToolSettings(settings);
 
@@ -419,6 +424,7 @@ async function boot() {
     .then((s) => {
       if (s && s.version && !DEMO) version = s.version;
       $('#st-ver').textContent = 'v' + version + (DEMO ? ' · ' + t('st.demo') : '');
+      $('#sb-ver').textContent = 'Studio · v' + version;
       splash.version(version);
       if (view === 'home') renderHomeView();
     })
@@ -502,8 +508,76 @@ function bindSidebar() {
   $$('#sidebar .sb-btn[data-panel]').forEach((b) => b.addEventListener('click', () => togglePanel(b.dataset.panel)));
   $('#btn-help').onclick = () => showHelp();
   $('#sb-quick').onclick = () => quick.open();
+  $('#sb-share').onclick = () => quick.open({ cat: 'Share', profile: 's:discord' });
+  $('#sb-home').onclick = () => setView('home');
+  $('#sb-editor').onclick = () => setView('editor');
+  $('#sb-ws').onclick = () => setView('home');
+  $('#sb-search').onclick = () => openPalette(paletteCtx());
+  $('#sb-engine').onclick = () => togglePanel('tools', { force: true });
+  $('#sb-collapse').onclick = () => {
+    settings.rail = $('#sidebar').classList.contains('compact') ? 'expanded' : 'compact';
+    saveSettings();
+    syncRail(true);
+  };
+  let rz = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(rz);
+    rz = requestAnimationFrame(() => syncRail(true));
+  });
   $('#panel-close').onclick = () => togglePanel(null);
   togglePanel(settings.panel || null, { initial: true });
+}
+
+// Sidebar: full width with labels and counts; compact (icons) next to an open panel in the
+// editor, on small windows or when the user collapses it. The pill indicator slides to the
+// open panel, or to the current view.
+function syncRail(adjust = false) {
+  const sb = $('#sidebar');
+  if (!sb) return;
+  const cv = $('#canvas');
+  const before = adjust && view === 'editor' && cv ? cv.getBoundingClientRect().left : null;
+  const auto = (view === 'editor' && !!panel) || window.innerWidth < 1180;
+  const compact = settings.rail === 'compact' || (settings.rail !== 'expanded' && auto) || (settings.rail === 'expanded' && window.innerWidth < 1000);
+  sb.classList.toggle('compact', compact);
+  const col = $('#sb-collapse');
+  if (col) col.title = t(compact ? 'sb.expand' : 'sb.collapse');
+  $('#sb-home').classList.toggle('current', view === 'home');
+  $('#sb-editor').classList.toggle('current', view === 'editor');
+  const counts = { library: NODE_COUNT, templates: TEMPLATES.length, history: homeHistory().length };
+  for (const [k, n] of Object.entries(counts)) {
+    const b = sb.querySelector(`.sb-btn[data-panel='${k}']`);
+    if (!b) continue;
+    let c = b.querySelector('.sb-n');
+    if (!c) {
+      c = el('span', { class: 'sb-n' });
+      b.append(c);
+    }
+    c.textContent = String(n);
+  }
+  requestAnimationFrame(placeRailIndicator);
+  if (before != null && editor) {
+    const after = cv.getBoundingClientRect().left;
+    if (after !== before) {
+      editor.view.x -= after - before;
+      editor.applyView();
+    }
+    rememberCanvas();
+  }
+}
+
+function placeRailIndicator() {
+  const ind = $('#sidebar .sb-ind');
+  if (!ind) return;
+  const shown = !!panel && !(view === 'home' && !document.body.classList.contains('home-panel'));
+  const target = (shown && $('#sidebar .sb-btn.active')) || $('#sidebar .sb-btn.current');
+  if (!target) {
+    ind.style.opacity = '0';
+    return;
+  }
+  ind.style.opacity = '1';
+  ind.style.height = target.offsetHeight + 'px';
+  ind.style.width = target.offsetWidth + 'px';
+  ind.style.transform = `translate(${target.offsetLeft}px, ${target.offsetTop}px)`;
 }
 
 function togglePanel(name, o = {}) {
@@ -512,6 +586,7 @@ function togglePanel(name, o = {}) {
     document.body.classList.add('home-panel');
     if (name === panel) {
       renderPanel(name);
+      syncRail();
       return;
     }
     o = { ...o, force: true };
@@ -523,6 +598,7 @@ function togglePanel(name, o = {}) {
   panel = next;
   $$('#sidebar .sb-btn[data-panel]').forEach((b) => b.classList.toggle('active', b.dataset.panel === next));
   $('#panel').hidden = !next;
+  syncRail();
   if (next) renderPanel(next);
   if (!o.initial) {
     settings.panel = next;
@@ -929,6 +1005,13 @@ function renderToolChips() {
     box.append(c);
   }
   const miss = ['ffmpeg', 'pandoc', 'soffice'].filter((k) => !tools[k]).length;
+  const have = ['ffmpeg', 'pandoc', 'soffice', 'gs', 'sevenzip'].filter((k) => !!tools[k]).length;
+  const es = $('#sb-engine-s');
+  if (es) es.textContent = t('sb.engine_n', { n: have, total: 5 });
+  const ring = $('#sb-engine .fg');
+  if (ring) ring.style.strokeDashoffset = String(94.25 * (1 - have / 5));
+  const eng = $('#sb-engine');
+  if (eng) eng.classList.toggle('warn', have < 3);
   const b = document.querySelector('.sb-btn[data-panel="tools"]');
   if (b) {
     let dot = b.querySelector('.sb-badge');
