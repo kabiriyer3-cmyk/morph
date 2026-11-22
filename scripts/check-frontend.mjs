@@ -23,6 +23,7 @@ for (const f of walk(join(root, 'src')).filter((f) => f.endsWith('.js'))) {
 const load = (p) => import(pathToFileURL(join(root, p)).href);
 
 if (!errors.length) {
+  await load('src/js/nodes_v4.js'); // adds the 0.4 nodes to NODE_DEFS
   const { NODE_DEFS, TYPES } = await load('src/js/nodes.js');
   const { TEMPLATES } = await load('src/js/templates.js');
   const { STRINGS } = await load('src/js/i18n.js');
@@ -58,6 +59,16 @@ if (!errors.length) {
       const b = NODE_DEFS[g.nodes[to]?.type];
       if (!a || !b || !a.outputs[out] || !b.inputs[inp]) errors.push(`template ${t.id}: bad link ${from}:${out} -> ${to}:${inp}`);
     }
+  }
+
+  const { PROFILE_IDS } = await load('src/js/profiles.js');
+  const { SERVICE_MB } = await load('src/js/nodes_v4.js');
+  const prs = readFileSync(join(root, 'src-tauri/src/ops/profiles.rs'), 'utf8');
+  for (const id of PROFILE_IDS) if (id !== 'custom' && !prs.includes(`("${id}",`)) errors.push(`profile ${id} is missing in src-tauri/src/ops/profiles.rs`);
+  const share = readFileSync(join(root, 'src-tauri/src/ops/share.rs'), 'utf8');
+  for (const [id, mb] of Object.entries(SERVICE_MB)) {
+    const lit = Number.isInteger(mb) ? mb.toFixed(1) : String(mb);
+    if (!share.includes(`"${id}" => ${lit},`)) errors.push(`service ${id} (${mb} MB) does not match src-tauri/src/ops/share.rs`);
   }
 
   const en = Object.keys(STRINGS.en);

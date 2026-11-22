@@ -14,8 +14,11 @@ pub mod img2;
 pub mod media;
 pub mod mesh3d;
 pub mod pdftools;
+pub mod profiles;
+pub mod share;
 pub mod sheet;
 pub mod text2;
+pub mod vfx;
 
 use crate::engine::{Ctx, FileItem, NodeSpec};
 use crate::util::Params;
@@ -52,6 +55,7 @@ pub fn run(ctx: &Ctx, node: &NodeSpec, inputs: Vec<Vec<FileItem>>) -> Result<Out
         "files.report" => files2::report(ctx, &p, all),
 
         "convert.any" => one(convert::convert_any(ctx, &p, all)?),
+        "share.compress" => one(share::compress(ctx, &p, all)?),
 
         "image.resize" => one(img::resize(ctx, &p, all)?),
         "image.crop" => one(img::crop(ctx, &p, all)?),
@@ -76,7 +80,7 @@ pub fn run(ctx: &Ctx, node: &NodeSpec, inputs: Vec<Vec<FileItem>>) -> Result<Out
         "image.animate" => one(img2::animate(ctx, &p, all)?),
         "image.frames" => one(img2::frames(ctx, &p, all)?),
 
-        "video.convert" => one(av::video_convert(ctx, &p, all)?),
+        "video.convert" => one(profiles::convert(ctx, &p, all)?),
         "video.trim" => one(media::video_trim(ctx, &p, all)?),
         "video.transform" => one(media::video_transform(ctx, &p, all)?),
         "video.gif" => one(media::video_gif(ctx, &p, all)?),
@@ -85,7 +89,7 @@ pub fn run(ctx: &Ctx, node: &NodeSpec, inputs: Vec<Vec<FileItem>>) -> Result<Out
         "video.concat" => one(media::video_concat(ctx, &p, all)?),
         "video.split" => one(av::video_split(ctx, &p, all)?),
         "video.fx" => one(av::video_fx(ctx, &p, all)?),
-        "video.filters" => one(av::video_filters(ctx, &p, all)?),
+        "video.filters" => one(vfx::filters(ctx, &p, all)?),
         "video.framerate" => one(av::video_framerate(ctx, &p, all)?),
         "video.watermark" => one(av::video_watermark(ctx, &p, all)?),
         "video.subtitles" => one(av::video_subtitles(ctx, &p, all)?),

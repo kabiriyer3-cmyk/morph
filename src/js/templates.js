@@ -137,6 +137,38 @@ export const TEMPLATES = [
     }),
   },
   {
+    id: 'share-discord', group: 'files', icon: 'send', title: 'Anything for Discord',
+    desc: 'Videos, photos, GIFs, audio, PDFs and documents squeezed under 10 MB. Too big? Split into parts.',
+    build: () => ({
+      nodes: [N('files.load', 40, 80), N('share.compress', 400, 80, { service: 'discord' }), N('files.save', 760, 80)],
+      links: [[0, 0, 1, 0], [1, 0, 2, 0]],
+    }),
+  },
+  {
+    id: 'share-email', group: 'files', icon: 'send', title: 'E-mail attachments',
+    desc: 'Fits every attachment under the 25 MB Gmail limit, documents get zipped.',
+    build: () => ({
+      nodes: [N('files.load', 40, 80), N('share.compress', 400, 80, { service: 'gmail' }), N('files.save', 760, 80)],
+      links: [[0, 0, 1, 0], [1, 0, 2, 0]],
+    }),
+  },
+  {
+    id: 'device-iphone', group: 'media', icon: 'phone', title: 'Videos for iPhone',
+    desc: 'The iPhone profile: H.264 1080p, AAC stereo, up to 60 fps. Plays everywhere on Apple devices.',
+    build: () => ({
+      nodes: [N('files.load', 40, 80), N('video.convert', 400, 80, { profile: 'iphone' }), N('files.save', 760, 80)],
+      links: [[0, 0, 1, 0], [1, 0, 2, 0]],
+    }),
+  },
+  {
+    id: 'device-dvd', group: 'media', icon: 'disc', title: 'Video to DVD (MPEG-2)',
+    desc: 'The DVD PAL profile: 720×576 MPEG-2 with AC-3 sound, ready for authoring tools.',
+    build: () => ({
+      nodes: [N('files.load', 40, 80), N('video.convert', 400, 80, { profile: 'dvd_pal' }), N('files.save', 760, 80)],
+      links: [[0, 0, 1, 0], [1, 0, 2, 0]],
+    }),
+  },
+  {
     id: 'shorts', group: 'media', icon: 'aspect', title: 'Vertical 9:16 video',
     desc: 'Landscape clips to Shorts / Reels format with a blurred background.',
     build: () => ({

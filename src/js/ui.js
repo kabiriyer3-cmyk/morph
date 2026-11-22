@@ -162,6 +162,14 @@ const ICONS = {
   'arrow-right': `<path d='M5 12h14M13 6l6 6-6 6'/>`,
   'arrow-up-right': `<path d='M7 17L17 7M8 7h9v9'/>`,
   cpu: `<rect x='6' y='6' width='12' height='12' rx='2'/><rect x='9.5' y='9.5' width='5' height='5' rx='.8'/><path d='M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'/>`,
+  send: `<path d='M21 3L10.2 13.8'/><path d='M21 3l-6.6 18-4.2-7.2L3 9.6z'/>`,
+  phone: `<rect x='6.5' y='2.5' width='11' height='19' rx='3'/><path d='M10.5 18.5h3'/>`,
+  tv: `<rect x='2.5' y='4.5' width='19' height='13' rx='2.5'/><path d='M8 21h8M12 17.5V21'/>`,
+  gamepad: `<path d='M7.6 7.5h8.8a4.6 4.6 0 0 1 4.5 5.6l-.8 3.4a2.3 2.3 0 0 1-3.9 1.1L14.6 16H9.4l-1.6 1.6a2.3 2.3 0 0 1-3.9-1.1l-.8-3.4a4.6 4.6 0 0 1 4.5-5.6z'/><path d='M8.5 10.5v3M7 12h3'/><circle cx='15.5' cy='11' r='.6' fill='currentColor'/><circle cx='17' cy='13' r='.6' fill='currentColor'/>`,
+  disc: `<circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='2.6'/><path d='M12 6a6 6 0 0 0-6 6'/>`,
+  mail: `<rect x='3' y='5' width='18' height='14' rx='3'/><path d='M4 7.5l8 5.5 8-5.5'/>`,
+  camera: `<path d='M4.5 8h2.8l1.6-2.5h6.2L16.7 8h2.8A1.5 1.5 0 0 1 21 9.5v8A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-8A1.5 1.5 0 0 1 4.5 8z'/><circle cx='12' cy='13' r='3.4'/>`,
+  sidebar: `<rect x='3' y='4' width='18' height='16' rx='4'/><path d='M9.5 4v16'/>`,
 };
 
 export function icon(name, size = 16) {

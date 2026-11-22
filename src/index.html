@@ -7,6 +7,7 @@
 <title>Morph</title>
 <link rel='icon' type='image/svg+xml' href='assets/logo.svg'>
 <link rel='stylesheet' href='css/app.css'>
+<link rel='stylesheet' href='css/v4.css'>
 <script>
 (function () {
   var queue = [];
@@ -84,15 +85,31 @@
   </header>
   <div id='main'>
     <nav id='sidebar'>
-      <button class='sb-btn' data-panel='library' data-icon='library' data-label-key='rail.library' data-i18n-title='side.library'></button>
-      <button class='sb-btn' data-panel='templates' data-icon='templates' data-label-key='rail.templates' data-i18n-title='side.templates'></button>
-      <button class='sb-btn' data-panel='history' data-icon='history' data-label-key='rail.history' data-i18n-title='side.history'></button>
-      <div class='sb-sep'></div>
-      <button class='sb-btn' id='sb-quick' data-icon='bolt' data-label-key='rail.quick' data-i18n-title='top.quick'></button>
-      <button class='sb-btn' data-panel='tools' data-icon='package' data-label-key='rail.tools' data-i18n-title='side.tools'></button>
-      <div class='sb-spacer'></div>
-      <button class='sb-btn' data-panel='settings' data-icon='settings' data-label-key='rail.settings' data-i18n-title='side.settings'></button>
-      <button class='sb-btn' id='btn-help' data-icon='help' data-label-key='rail.help' data-i18n-title='side.help'></button>
+      <div class='sb-top'>
+        <button class='sb-ws' id='sb-ws' data-i18n-title='top.home'><span class='sb-ws-ic'><svg viewBox='86 86 340 340' width='16' height='16' aria-hidden='true'><path fill='currentColor' d='M197.2 209.9A35.8 35.8 0 0 1 182.6 214.9A103.4 103.4 0 1 0 297.1 329.4A35.8 35.8 0 0 1 302.1 314.8ZM209.6 197A35.8 35.8 0 0 0 214.3 179.4L214.3 150.6A59.6 59.6 0 0 1 273.9 91L361.4 91A59.6 59.6 0 0 1 421 150.6L421 238.1A59.6 59.6 0 0 1 361.4 297.7L332.6 297.7A35.8 35.8 0 0 0 315 302.4Z'/></svg></span><span class='sb-ws-t'><b>Morph</b><small id='sb-ver'>Studio</small></span></button>
+        <button class='sb-search' id='sb-search' data-i18n-title='top.palette'><span class='ico' data-icon='search'></span><span class='sb-search-l' data-i18n='sb.search'>Search</span><kbd>Ctrl K</kbd></button>
+      </div>
+      <div class='sb-scroll'>
+        <div class='sb-ind' aria-hidden='true'></div>
+        <div class='sb-sec' data-i18n='sb.workspace'>Workspace</div>
+        <button class='sb-btn' id='sb-home' data-icon='dashboard' data-label-key='rail.home' data-i18n-title='top.home'></button>
+        <button class='sb-btn' id='sb-editor' data-icon='wire' data-label-key='rail.editor' data-i18n-title='rail.editor'></button>
+        <div class='sb-sec' data-i18n='sb.convert'>Convert</div>
+        <button class='sb-btn' id='sb-quick' data-icon='bolt' data-label-key='rail.quick' data-i18n-title='top.quick'></button>
+        <button class='sb-btn' id='sb-share' data-icon='send' data-label-key='rail.share' data-i18n-title='rail.share_t'></button>
+        <div class='sb-sec' data-i18n='sb.library'>Library</div>
+        <button class='sb-btn' data-panel='library' data-icon='library' data-label-key='rail.library' data-i18n-title='side.library'></button>
+        <button class='sb-btn' data-panel='templates' data-icon='templates' data-label-key='rail.templates' data-i18n-title='side.templates'></button>
+        <button class='sb-btn' data-panel='history' data-icon='history' data-label-key='rail.history' data-i18n-title='side.history'></button>
+        <div class='sb-sec' data-i18n='sb.system'>System</div>
+        <button class='sb-btn' data-panel='tools' data-icon='package' data-label-key='rail.tools' data-i18n-title='side.tools'></button>
+        <button class='sb-btn' data-panel='settings' data-icon='settings' data-label-key='rail.settings' data-i18n-title='side.settings'></button>
+        <button class='sb-btn' id='btn-help' data-icon='help' data-label-key='rail.help' data-i18n-title='side.help'></button>
+      </div>
+      <div class='sb-foot'>
+        <button class='sb-engine' id='sb-engine' data-i18n-title='side.tools'><svg class='sb-ring' viewBox='0 0 36 36' aria-hidden='true'><circle class='bg' cx='18' cy='18' r='15'/><circle class='fg' cx='18' cy='18' r='15'/></svg><span class='sb-engine-t'><b data-i18n='sb.engine'>Engine</b><small id='sb-engine-s'></small></span></button>
+        <button class='sb-collapse' id='sb-collapse' data-icon='sidebar' data-i18n-title='sb.collapse'></button>
+      </div>
     </nav>
     <aside id='panel' hidden>
       <div class='panel-head'><h2 id='panel-title'></h2><span class='count' id='panel-count'></span><button class='icon-btn' id='panel-close' data-icon='x'></button></div>

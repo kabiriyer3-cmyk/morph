@@ -2,7 +2,8 @@
 // templates with live graph thumbnails and the node library by category.
 import { el, svgEl, icon, fmtTime } from './ui.js';
 import { t, getLang, catLabel, tplText } from './i18n.js';
-import { NODE_DEFS, CATEGORIES, NODE_COUNT, typeColor } from './nodes.js';
+import { NODE_DEFS, CATEGORIES, typeColor } from './nodes.js';
+import { NODE_TOTAL as NODE_COUNT } from './nodes_v4.js';
 import { TEMPLATES } from './templates.js';
 import { paint } from './colors.js';
 import { TOOL_INFO } from './toolsui.js';
@@ -10,7 +11,7 @@ import { TOOL_INFO } from './toolsui.js';
 const DAYS = 14;
 const DAY_MS = 86400000;
 const HOME_TOOLS = ['ffmpeg', 'pandoc', 'soffice', 'gs', 'pdftoppm', 'sevenzip'];
-const FEATURED = ['web-images', 'compress-video', 'excel-csv', 'docs-pdf', 'gif', 'convert-all'];
+const FEATURED = ['web-images', 'share-discord', 'device-iphone', 'excel-csv', 'docs-pdf', 'convert-all'];
 
 function greeting() {
   const h = new Date().getHours();
