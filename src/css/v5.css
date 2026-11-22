@@ -1,0 +1,141 @@
+/* Morph UI 0.5 "Compact": loaded after v4.css. Same pill controls, less of everything else:
+   smaller radii on surfaces, no duplicated search/brand/status in the sidebar, one-line library
+   rows, a calmer dashboard and fixed hairline grids (cells never get their own radius). */
+:root { --island-r: 16px; }
+
+/* shell */
+#app { grid-template-rows: 50px minmax(0, 1fr) 30px; background: var(--bg); }
+#main { gap: 6px; padding: 0 6px; }
+#sidebar, #panel, #inspector, #canvas-wrap, #home { border-radius: var(--island-r); }
+.panel-head { height: 48px; padding: 0 8px 0 16px; }
+#panel { width: 280px; }
+
+/* top bar: file and history buttons only make sense in the editor */
+body[data-view='home'] #topbar .tb-group { display: none; }
+.tb-pill { height: 34px; padding: 0 14px; }
+.run-btn { height: 34px; box-shadow: none; }
+.brand { width: 34px; height: 34px; }
+.tab { height: 30px; }
+
+/* sidebar: just the navigation */
+#sidebar { width: 196px; padding: 8px; }
+.sb-top, .sb-engine, .sb-btn .sb-n { display: none !important; }
+.sb-scroll { padding-top: 2px; }
+.sb-sec { height: 1px; margin: 8px 12px; padding: 0; overflow: hidden; color: transparent; background: var(--line); font-size: 0; }
+.sb-ind + .sb-sec { display: none; }
+.sb-btn { height: 34px; gap: 10px; padding: 0 10px 0 11px; }
+.sb-ind { height: 34px; }
+.sb-btn .sb-l { font-size: 12.5px; }
+.sb-foot { justify-content: flex-start; padding-top: 6px; border-top: 0; }
+.sb-collapse { width: 34px; height: 34px; }
+#sidebar.compact { width: 58px; padding: 8px 6px; }
+#sidebar.compact .sb-btn { width: 42px; height: 38px; }
+#sidebar.compact .sb-sec { margin: 8px 10px; }
+#sidebar.compact .sb-foot { align-items: center; }
+
+/* hairline grids: the container is the only rounded box */
+.iw-stats { border-radius: 14px; }
+.iw-stats div, .hm-stat { border-radius: 0 !important; }
+.iw-stats div { padding: 9px 11px 8px; }
+.iw-stats b { font-size: 15px; }
+.iw-sec:has(.iw-tips) { display: none; }
+
+/* node library: one line per node, the description lives in the tooltip */
+.lib-hint { display: none; }
+.lib-cats { flex-wrap: nowrap; overflow-x: auto; margin: 8px -10px 6px; padding: 0 10px 2px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 24px), transparent); }
+.lib-cats::-webkit-scrollbar { display: none; }
+.lib-cats button { flex: none; height: 24px; }
+.lib-item { gap: 9px; padding: 4px 6px; border-radius: var(--pill); }
+.lib-item .li { width: 26px; height: 26px; border-radius: 50%; }
+.lib-item .lt span { display: none; }
+.lib-item b { font-size: 12.5px; font-weight: 500; color: var(--text-2); }
+.lib-item:hover b { color: var(--text); }
+.lib-cat { margin: 14px 6px 4px; }
+
+/* converter: drop the counters and the duplicated format badge */
+.cv-cat small, .cv-prof em, .cv-title p { display: none; }
+.cv-head { padding: 12px 12px 12px 16px; }
+.cv-badge { width: 32px; height: 32px; }
+.cv-cat { height: 32px; }
+.cv-cat .ci { width: 22px; height: 22px; }
+.cv-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+.cv-right { grid-template-columns: 158px minmax(0, 1fr); }
+.cv-cats { padding: 10px 6px 10px 10px; }
+.cv-grid { grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); gap: 6px; padding: 10px 12px 14px 10px; }
+.cv-left { gap: 8px; padding: 12px 12px 12px 14px; }
+.cv-edits { gap: 4px; }
+.cv-tool { height: 28px; padding: 0 10px 0 9px; font-size: 12px; }
+.cv-lbl { display: none; }
+.cv-dest small { display: none; }
+.cv-dest .seg-ctl button, .cv-foot .seg-ctl button { white-space: nowrap; }
+.cv-merge { white-space: nowrap; }
+.cv-prof { height: 50px; gap: 9px; padding: 0 12px 0 7px; }
+.cv-prof .pi { width: 34px; height: 34px; }
+.cv-row { height: 44px; }
+.cv-th-img { width: 30px; height: 30px; }
+.cv-foot { padding: 10px 14px 12px; }
+.cv-sum { height: 44px; }
+.cv-sum .pi { width: 32px; height: 32px; }
+
+/* ------------------------------------------------------------------ dashboard */
+.h5 { max-width: 1040px; margin: 0 auto; padding: 30px 36px 40px; display: flex; flex-direction: column; gap: 26px; }
+.h5-head { display: flex; align-items: center; gap: 24px; }
+.h5-t { flex: 1; min-width: 0; }
+.h5-t h1 { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -.028em; line-height: 1.15; }
+.h5-t p { margin: 5px 0 0; color: var(--dim); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h5-acts { flex: none; display: flex; align-items: center; gap: 6px; }
+.h5-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px 0 12px; border: 0; border-radius: var(--pill); background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); color: var(--text); font-weight: 550; white-space: nowrap; transition: background .14s, color .14s; }
+.h5-btn:hover { background: rgba(255, 255, 255, .1); }
+.h5-btn.ghost { background: transparent; box-shadow: none; color: var(--muted); }
+.h5-btn.ghost:hover { background: rgba(255, 255, 255, .05); color: var(--text); }
+.h5-btn.primary { background: #f4f4f5; box-shadow: none; color: #0b0b0d; }
+.h5-btn.primary:hover { background: #fff; }
+.h5-btn .ic { flex: none; }
+.h5-block { display: flex; flex-direction: column; gap: 10px; }
+.h5-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 2px; }
+.h5-sec h2 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: -.01em; }
+.h5-dim { color: var(--dim); font-size: 11.5px; }
+.h5-lnk { display: inline-flex; align-items: center; gap: 2px; padding: 0; border: 0; background: transparent; color: var(--dim); font-size: 12px; transition: color .12s; }
+.h5-lnk:hover { color: var(--text); }
+
+.h5-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-radius: 16px; background: rgba(255, 255, 255, .025); box-shadow: inset 0 0 0 1px var(--line); }
+.h5-stat { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; min-width: 0; height: 74px; padding: 14px 16px; }
+.h5-stat + .h5-stat::before { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 1px; background: var(--line); }
+.h5-stat .tx { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.h5-stat .k { color: var(--dim); font-size: 11.5px; white-space: nowrap; }
+.h5-stat b { font-size: 21px; font-weight: 600; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.h5-stat .hm-bars { margin-bottom: 1px; opacity: .9; }
+.h5-rate { flex: none; width: 74px; height: 4px; margin-bottom: 6px; overflow: hidden; border-radius: var(--pill); background: rgba(255, 92, 92, .55); }
+.h5-rate i { display: block; height: 100%; border-radius: var(--pill); background: var(--ok); }
+
+.h5-tpls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.h5-tpl { display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden; border: 0; border-radius: 16px; background: rgba(255, 255, 255, .025); box-shadow: inset 0 0 0 1px var(--line); text-align: left; transition: background .14s, box-shadow .14s; }
+.h5-tpl:hover { background: rgba(255, 255, 255, .045); box-shadow: inset 0 0 0 1px var(--line-3); }
+.h5-tpl .tp { height: 92px; margin: 4px 4px 0; border-radius: 12px; background-color: var(--bg-2); background-image: radial-gradient(circle, rgba(255, 255, 255, .06) .8px, transparent 1.1px); background-size: 12px 12px; }
+.h5-tpl:hover .hm-thumb .nd { stroke: rgba(255, 255, 255, .22); }
+.h5-tpl .tb { display: flex; align-items: center; gap: 8px; min-width: 0; height: 40px; padding: 0 12px; }
+.h5-tpl .ti { flex: none; display: flex; color: var(--c); }
+.h5-tpl b { min-width: 0; overflow: hidden; color: var(--text-2); font-size: 12.5px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.h5-tpl:hover b { color: var(--text); }
+
+.h5-runs { display: flex; flex-direction: column; padding: 4px; border-radius: 16px; background: rgba(255, 255, 255, .025); box-shadow: inset 0 0 0 1px var(--line); }
+.h5-run { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto 92px; align-items: center; gap: 12px; height: 38px; padding: 0 12px; border-radius: var(--pill); }
+.h5-run:hover { background: rgba(255, 255, 255, .035); }
+.h5-run i { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); }
+.h5-run.ok i { background: var(--ok); }
+.h5-run.fail i { background: var(--err, #ff5c5c); }
+.h5-run b { min-width: 0; overflow: hidden; color: var(--text-2); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.h5-run span { color: var(--dim); font-size: 11.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.h5-run .when { text-align: right; }
+.h5-empty { padding: 14px 12px; color: var(--dim); font-size: 12px; }
+
+@media (max-width: 1180px) {
+  .h5 { padding: 24px 24px 32px; }
+  .h5-head { flex-wrap: wrap; gap: 14px; }
+  .h5-acts { width: 100%; }
+}
+@media (max-width: 980px) {
+  .h5-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .h5-stat:nth-child(3)::before { display: none; }
+  .h5-tpls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

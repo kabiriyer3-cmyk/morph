@@ -1,16 +1,15 @@
-// Dashboard: quick actions, activity from the run history, external tools,
-// templates with live graph thumbnails and the node library by category.
+// Dashboard (0.5, compact): greeting with the main actions, one activity strip,
+// templates with live graph thumbnails and the recent runs.
 import { el, svgEl, icon, fmtTime } from './ui.js';
-import { t, getLang, catLabel, tplText } from './i18n.js';
+import { t, getLang, tplText } from './i18n.js';
 import { NODE_DEFS, CATEGORIES, typeColor } from './nodes.js';
 import { NODE_TOTAL as NODE_COUNT } from './nodes_v4.js';
 import { TEMPLATES } from './templates.js';
 import { paint } from './colors.js';
-import { TOOL_INFO } from './toolsui.js';
+import './i18n_v5.js';
 
 const DAYS = 14;
 const DAY_MS = 86400000;
-const HOME_TOOLS = ['ffmpeg', 'pandoc', 'soffice', 'gs', 'pdftoppm', 'sevenzip'];
 const FEATURED = ['web-images', 'share-discord', 'device-iphone', 'excel-csv', 'docs-pdf', 'convert-all'];
 
 function greeting() {
@@ -53,8 +52,8 @@ function buckets(hist, pick) {
 }
 
 function bars(values) {
-  const w = 112;
-  const h = 30;
+  const w = 84;
+  const h = 26;
   const gap = 2;
   const bw = (w - gap * (values.length - 1)) / values.length;
   const max = Math.max(1, ...values);
@@ -116,38 +115,27 @@ function thumb(tpl) {
   return svg;
 }
 
-const sec = (title, sub, link) => el('div', { class: 'hm-sec-h' }, el('h2', { text: title }), sub ? el('small', { text: sub }) : null, link || null);
-const lnk = (text, fn) => el('button', { class: 'lnk', onclick: fn }, el('span', { text }), icon('chevron-right', 13));
+const head = (title, link) => el('div', { class: 'h5-sec' }, el('h2', { text: title }), link || null);
+const lnk = (text, fn) => el('button', { class: 'h5-lnk', onclick: fn }, el('span', { text }), icon('chevron-right', 13));
+const pill = (cls, ic, text, fn, title) => el('button', { class: 'h5-btn' + (cls ? ' ' + cls : ''), onclick: fn, title: title || '' }, icon(ic, 15), el('span', { text }));
 
 export function renderHome(root, ctx) {
   const top = root.scrollTop;
   root.textContent = '';
   const hist = (ctx.history() || []).filter((h) => h && h.at);
-  const st = ctx.status() || { tools: {} };
-  const tools = st.tools || {};
-  const ready = HOME_TOOLS.filter((k) => tools[k] && tools[k].path).length;
-  const cats = Object.keys(CATEGORIES);
-  const page = el('div', { class: 'hm' });
-
-  // header
-  page.append(el('header', { class: 'hm-head' },
-    el('div', { class: 'hm-t' },
-      el('div', { class: 'hm-over' }, el('span', { class: 'hm-ver', text: 'Morph ' + ctx.version() }), ctx.demo ? el('span', { class: 'hm-tag', text: t('st.demo') }) : null),
-      el('h1', { text: greeting() }),
-      el('p', { text: t('home.sub', { n: NODE_COUNT, c: cats.length, t: TEMPLATES.length, r: ready, all: HOME_TOOLS.length }) })),
-    el('button', { class: 'hm-search', onclick: () => ctx.palette() }, icon('search', 15), el('span', { text: t('home.search') }), el('kbd', { text: 'Ctrl K' }))));
-
-  // quick actions
   const g = ctx.graph();
-  const act = (ic, title, text, fn, key, cls) => el('button', { class: 'hm-act' + (cls ? ' ' + cls : ''), onclick: fn },
-    el('span', { class: 'ai' }, icon(ic, 16)), key ? el('kbd', { text: key }) : null, el('b', { text: title }), el('span', { class: 'ad', text }));
-  page.append(el('div', { class: 'hm-actions' },
-    act('wire', t('home.continue'), (g.name || t('top.untitled')) + ' · ' + t('home.nodes_n', { n: g.nodes }), () => ctx.editor(), null, 'primary'),
-    act('bolt', t('home.quick'), t('home.quick_d'), () => ctx.quick(), 'Ctrl ⇧ C'),
-    act('file-plus', t('home.new'), t('home.new_d'), () => ctx.newWorkflow()),
-    act('folder-open', t('home.open'), t('home.open_d'), () => ctx.openWorkflow(), 'Ctrl O')));
+  const page = el('div', { class: 'h5' });
 
-  // activity
+  // greeting and the four things people come here for
+  page.append(el('header', { class: 'h5-head' },
+    el('div', { class: 'h5-t' }, el('h1', { text: greeting() }), el('p', { text: t('home.sub5', { n: NODE_COUNT, t: TEMPLATES.length }) })),
+    el('div', { class: 'h5-acts' },
+      pill('ghost', 'file-plus', t('home.new5'), () => ctx.newWorkflow(), t('home.new')),
+      pill('ghost', 'folder-open', t('home.open5'), () => ctx.openWorkflow(), t('home.open')),
+      pill('', 'wire', t('home.continue5'), () => ctx.editor(), t('home.continue5_t', { name: g.name || t('top.untitled') })),
+      pill('primary', 'bolt', t('home.quick'), () => ctx.quick(), 'Ctrl+Shift+C'))));
+
+  // one activity strip: four numbers, sparklines only when there is something to draw
   const runs14 = buckets(hist, () => 1);
   const files14 = buckets(hist, (h) => Number(h.files) || 0);
   const time14 = buckets(hist, (h) => Number(h.ms) || 0);
@@ -155,77 +143,48 @@ export function renderHome(root, ctx) {
   const recent = hist.filter((h) => h.at >= Date.now() - DAYS * DAY_MS);
   const okN = recent.filter((h) => h.ok).length;
   const failN = recent.filter((h) => !h.ok && !h.cancelled).length;
-  const cancelN = recent.filter((h) => h.cancelled).length;
   const fin = okN + failN;
   const rate = fin ? Math.round((okN / fin) * 100) : null;
-  const stat = (k, v, s, viz) => el('div', { class: 'hm-stat' }, el('span', { class: 'k', text: k }), el('div', { class: 'row' }, el('span', { class: 'v', text: v }), viz), el('span', { class: 's', text: s }));
-  const rateBar = el('div', { class: 'hm-rate', title: `${okN} / ${failN} / ${cancelN}` },
-    el('i', { class: 'ok', style: { flexGrow: String(okN || 0) } }), el('i', { class: 'fail', style: { flexGrow: String(failN || 0) } }), el('i', { class: 'cancel', style: { flexGrow: String(cancelN || 0) } }),
-    !recent.length ? el('i', { class: 'none', style: { flexGrow: '1' } }) : null);
-  page.append(el('section', {},
-    sec(t('home.activity'), t('home.last_days', { n: DAYS }), lnk(t('home.all_runs'), () => ctx.panel('history'))),
-    el('div', { class: 'hm-stats' },
-      stat(t('home.runs'), num(sum(runs14)), t('home.runs_s', { n: num(hist.length) }), bars(runs14)),
-      stat(t('home.files'), num(sum(files14)), t('home.files_s'), bars(files14)),
-      stat(t('home.success'), rate == null ? '—' : rate + '%', t('home.success_s', { ok: okN, fail: failN }), rateBar),
-      stat(t('home.time'), fmtTime(sum(time14)), t('home.time_s'), bars(time14)))));
+  const cell = (k, v, vals, tip) => el('div', { class: 'h5-stat', title: tip || '' },
+    el('div', { class: 'tx' }, el('span', { class: 'k', text: k }), el('b', { text: v })),
+    vals && sum(vals) ? bars(vals) : null);
+  const rateCell = el('div', { class: 'h5-stat', title: t('home.success_s', { ok: okN, fail: failN }) },
+    el('div', { class: 'tx' }, el('span', { class: 'k', text: t('home.success5') }), el('b', { text: rate == null ? '—' : rate + '%' })),
+    fin ? el('div', { class: 'h5-rate' }, el('i', { style: { width: rate + '%' } })) : null);
+  page.append(el('section', { class: 'h5-block' },
+    head(t('home.activity'), el('span', { class: 'h5-dim', text: t('home.days5') })),
+    el('div', { class: 'h5-stats' },
+      cell(t('home.runs5'), num(sum(runs14)), runs14, t('home.runs_s', { n: num(hist.length) })),
+      cell(t('home.files5'), num(sum(files14)), files14, t('home.files_s')),
+      rateCell,
+      cell(t('home.time5'), sum(time14) ? fmtTime(sum(time14)) : '—', time14, t('home.time_s')))));
 
-  // recent runs + tools
-  const rows = el('div', { class: 'hm-runs' }, el('div', { class: 'hr th' }, el('span'), el('span', { text: t('home.col_name') }), el('span', { text: t('home.col_files') }), el('span', { text: t('home.col_time') }), el('span', { text: t('home.col_when') })));
-  if (!hist.length) rows.append(el('div', { class: 'hm-empty' }, icon('play', 16), el('span', { text: t('home.no_runs') })));
-  for (const h of hist.slice(0, 6)) {
-    rows.append(el('div', { class: 'hr ' + (h.cancelled ? 'cancel' : h.ok ? 'ok' : 'fail'), title: h.error || '' },
-      el('i'), el('b', { text: h.name || t('top.untitled') }),
-      el('span', { text: h.files != null ? num(h.files) : '—' }), el('span', { text: fmtTime(h.ms || 0) }), el('span', { class: 'when', text: ago(h.at) })));
-  }
-  const tl = el('div', { class: 'hm-tools' });
-  for (const k of HOME_TOOLS) {
-    const info = TOOL_INFO[k];
-    const s = tools[k] || {};
-    const ok = !!s.path;
-    const ver = ok && s.version ? (String(s.version).match(/\d+(?:\.\d+)+/) || [''])[0] : '';
-    tl.append(paint(el('div', { class: 'ht' + (ok ? ' ok' : '') },
-      el('span', { class: 'ti' }, icon(info.icon, 14)),
-      el('b', { text: info.label }),
-      el('span', { class: 'hv', text: ok ? (ver ? 'v' + ver : t('tools.ok')) : t('home.tool_missing') }),
-      el('i')), info.color));
-  }
-  page.append(el('div', { class: 'hm-split' },
-    el('section', {}, sec(t('home.recent'), null, lnk(t('home.history'), () => ctx.panel('history'))), el('div', { class: 'hm-card' }, rows)),
-    el('section', {}, sec(t('home.tools'), t('home.tools_ready', { r: ready, all: HOME_TOOLS.length }), lnk(t('home.manage'), () => ctx.panel('tools'))), el('div', { class: 'hm-card' }, tl))));
-
-  // templates
+  // templates: a graph thumbnail and a title, nothing else
   const feat = FEATURED.map((id) => TEMPLATES.find((x) => x.id === id)).filter(Boolean);
   for (const x of TEMPLATES) if (feat.length < 6 && !feat.includes(x)) feat.push(x);
-  const tg = el('div', { class: 'hm-tpls' });
+  const tg = el('div', { class: 'h5-tpls' });
   for (const tpl of feat) {
     const gr = tpl.build();
     const main = gr.nodes.find((n) => !['files.load', 'files.save', 'files.preview'].includes(n.type)) || gr.nodes[0];
     const c = (CATEGORIES[(NODE_DEFS[main.type] || {}).cat] || CATEGORIES.util).color;
-    tg.append(paint(el('button', { class: 'hm-tpl', onclick: () => ctx.template(tpl) },
+    tg.append(paint(el('button', { class: 'h5-tpl', onclick: () => ctx.template(tpl), title: tplText(tpl, 'desc') },
       el('div', { class: 'tp' }, thumb(tpl)),
-      el('div', { class: 'tb' },
-        el('b', {}, icon(tpl.icon || 'templates', 13), el('span', { text: tplText(tpl, 'title') })),
-        el('span', { class: 'td', text: tplText(tpl, 'desc') }),
-        el('span', { class: 'tm', text: t('home.nodes_n', { n: gr.nodes.length }) }))), c));
+      el('div', { class: 'tb' }, el('span', { class: 'ti' }, icon(tpl.icon || 'templates', 13)), el('b', { text: tplText(tpl, 'title') }))), c));
   }
-  page.append(el('section', {}, sec(t('home.templates'), t('home.templates_s', { n: TEMPLATES.length }), lnk(t('home.all_templates'), () => ctx.panel('templates'))), tg));
+  page.append(el('section', { class: 'h5-block' }, head(t('home.templates5'), lnk(t('home.all_templates'), () => ctx.panel('templates'))), tg));
 
-  // node library by category
-  const cl = el('div', { class: 'hm-cats' });
-  for (const k of cats) {
-    const info = CATEGORIES[k];
-    const n = Object.values(NODE_DEFS).filter((d) => d.cat === k).length;
-    if (!n) continue;
-    cl.append(paint(el('button', { class: 'hm-cat', onclick: () => ctx.library(k) }, el('span', { class: 'ci' }, icon(info.icon, 13)), el('span', { text: catLabel(k) }), el('small', { text: String(n) })), info.color));
+  // recent runs
+  const rows = el('div', { class: 'h5-runs' });
+  if (!hist.length) rows.append(el('div', { class: 'h5-empty', text: t('home.no_runs5') }));
+  for (const h of hist.slice(0, 5)) {
+    const st = h.cancelled ? 'cancel' : h.ok ? 'ok' : 'fail';
+    rows.append(el('div', { class: 'h5-run ' + st, title: h.error || '' },
+      el('i'), el('b', { text: h.name || t('top.untitled') }),
+      el('span', { text: (h.files != null ? t('nd.files', { n: num(h.files) }) + ' · ' : '') + fmtTime(h.ms || 0) }),
+      el('span', { class: 'when', text: ago(h.at) })));
   }
-  page.append(el('section', {}, sec(t('home.library'), t('lib.count', { n: NODE_COUNT }), lnk(t('home.open_library'), () => ctx.library('all'))), cl));
+  page.append(el('section', { class: 'h5-block' }, head(t('home.recent5'), hist.length ? lnk(t('home.history'), () => ctx.panel('history')) : null), rows));
 
-  page.append(el('footer', { class: 'hm-foot' },
-    el('span', {}, el('kbd', { text: 'Ctrl K' }), t('home.k_search')),
-    el('span', {}, el('kbd', { text: 'Tab' }), t('home.k_add')),
-    el('span', {}, el('kbd', { text: 'Ctrl ⏎' }), t('home.k_run')),
-    el('span', {}, el('kbd', { text: '?' }), t('home.k_help'))));
   root.append(page);
   root.scrollTop = top;
 }
