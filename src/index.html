@@ -57,27 +57,35 @@
     <div class='tb-group'>
       <button class='tb-btn' id='btn-fit' data-icon='fit' data-i18n-title='top.fit'></button>
       <button class='tb-btn' id='btn-arrange' data-icon='arrange' data-i18n-title='top.arrange'></button>
+      <button class='tb-btn' id='btn-minimap' data-icon='map' data-i18n-title='top.minimap'></button>
     </div>
     <input id='wf-name' spellcheck='false' autocomplete='off' data-i18n-placeholder='top.untitled' data-i18n-title='top.name'>
     <div class='tb-spacer'></div>
+    <button class='tb-pill tb-search' id='btn-palette' data-i18n-title='top.palette'><span class='ico' data-icon='search'></span><span data-i18n='top.palette_ph'>Search or run a command</span><kbd>Ctrl K</kbd></button>
+    <button class='tb-pill' id='btn-quick' data-i18n-title='top.quick_t'><span class='ico' data-icon='bolt'></span><span class='tbl' data-i18n='top.quick'>Quick convert</span></button>
     <div id='run-progress' hidden><div class='bar'><i></i></div><span class='label'></span></div>
     <button id='btn-run' class='run-btn'><span class='ico' data-icon='play'></span><span class='lbl' data-i18n='top.run'>Run</span><kbd>Ctrl ⏎</kbd></button>
   </header>
   <div id='main'>
     <nav id='sidebar'>
-      <button class='sb-btn' data-panel='library' data-icon='library' data-i18n-title='side.library'></button>
-      <button class='sb-btn' data-panel='templates' data-icon='templates' data-i18n-title='side.templates'></button>
-      <button class='sb-btn' data-panel='history' data-icon='history' data-i18n-title='side.history'></button>
+      <button class='sb-btn' data-panel='library' data-icon='library' data-tip-key='side.library'></button>
+      <button class='sb-btn' data-panel='templates' data-icon='templates' data-tip-key='side.templates'></button>
+      <button class='sb-btn' data-panel='history' data-icon='history' data-tip-key='side.history'></button>
+      <div class='sb-sep'></div>
+      <button class='sb-btn' id='sb-quick' data-icon='bolt' data-tip-key='top.quick'></button>
+      <button class='sb-btn' data-panel='tools' data-icon='package' data-tip-key='side.tools'></button>
       <div class='sb-spacer'></div>
-      <button class='sb-btn' data-panel='settings' data-icon='settings' data-i18n-title='side.settings'></button>
-      <button class='sb-btn' id='btn-help' data-icon='help' data-i18n-title='side.help'></button>
+      <button class='sb-btn' data-panel='settings' data-icon='settings' data-tip-key='side.settings'></button>
+      <button class='sb-btn' id='btn-help' data-icon='help' data-tip-key='side.help'></button>
     </nav>
     <aside id='panel' hidden>
-      <div class='panel-head'><h2 id='panel-title'></h2><button class='icon-btn' id='panel-close' data-icon='x'></button></div>
+      <div class='panel-head'><h2 id='panel-title'></h2><span class='count' id='panel-count'></span><button class='icon-btn' id='panel-close' data-icon='x'></button></div>
       <div id='panel-body'></div>
     </aside>
     <section id='canvas-wrap'>
       <div id='canvas' tabindex='-1'></div>
+      <div id='welcome' hidden></div>
+      <div id='minimap' hidden><canvas></canvas></div>
       <div id='drop-hint' hidden><div><span data-icon='upload'></span><b data-i18n='drop.hint'></b></div></div>
       <div id='zoom-tools'>
         <button class='icon-btn' id='zoom-out' data-icon='minus'></button>
@@ -91,6 +99,7 @@
     <span id='st-msg'></span>
     <span id='st-tools'></span>
     <span class='st-spacer'></span>
+    <span id='st-sel'></span>
     <span id='st-nodes'></span>
     <span id='st-ver'></span>
   </footer>
