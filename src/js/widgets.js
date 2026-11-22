@@ -1,6 +1,6 @@
 // Widgets rendered inside nodes (ComfyUI style pills).
-import { el, icon, clamp, basename, extOf, menu } from './ui.js';
-import { t, wLabel, optLabel } from './i18n.js';
+import { el, icon, clamp, basename, extOf, menu, closeMenu } from './ui.js';
+import { t, wLabel, optLabel, groupLabel } from './i18n.js';
 import { pickFiles } from './api.js';
 
 const decimals = (s) => {
@@ -38,7 +38,7 @@ export function createWidget(w, value, onChange) {
     case 'slider':
       return numberWidget(w, value, onChange);
     case 'combo':
-      return comboWidget(w, value, onChange);
+      return w.seg ? segWidget(w, value, onChange) : comboWidget(w, value, onChange);
     case 'toggle':
       return toggleWidget(w, value, onChange);
     case 'textarea':
@@ -180,6 +180,10 @@ function comboWidget(w, value, onChange) {
   root.addEventListener('click', (e) => {
     if (e.target.closest('.arr')) return;
     const b = root.getBoundingClientRect();
+    if (w.groups || w.options.length > 14) {
+      formatPicker(w, v, b, set);
+      return;
+    }
     menu(w.options.map((o) => ({ label: optLabel(w, o), checked: o === v, onClick: () => set(o) })), b.left, b.bottom + 3, { minWidth: b.width });
   });
   root.setValue = (nv) => {
@@ -356,4 +360,106 @@ function colorWidget(w, value, onChange) {
   };
   show();
   return root;
+}
+
+// Segmented control for combos with a few short options.
+function segWidget(w, value, onChange) {
+  const norm = (x) => (w.options.includes(x) ? x : w.options.includes(String(x)) ? String(x) : w.value);
+  let v = norm(value);
+  const segs = el('div', { class: 'segs' });
+  const root = el('div', { class: 'w w-seg' }, el('span', { class: 'wl', text: wLabel(w) }), segs);
+  const btns = w.options.map((o) => {
+    const b = el('button', {
+      class: 'seg',
+      text: optLabel(w, o),
+      title: optLabel(w, o),
+      onpointerdown: (e) => e.stopPropagation(),
+      onclick: (e) => {
+        e.stopPropagation();
+        if (o === v) return;
+        v = o;
+        show();
+        onChange(v);
+      },
+    });
+    segs.append(b);
+    return b;
+  });
+  const show = () => btns.forEach((b, i) => b.classList.toggle('on', w.options[i] === v));
+  root.setValue = (nv) => {
+    v = norm(nv);
+    show();
+  };
+  show();
+  return root;
+}
+
+// Searchable grid popup for long option lists (formats, codecs). w.groups = { label: [options] }.
+let picker = null;
+function closePicker() {
+  if (!picker) return;
+  picker.remove();
+  picker = null;
+  document.removeEventListener('pointerdown', pickerOutside, true);
+}
+function pickerOutside(e) {
+  if (picker && !picker.contains(e.target)) closePicker();
+}
+export function formatPicker(w, current, rect, onPick) {
+  closeMenu();
+  closePicker();
+  const input = el('input', { placeholder: t('wid.filter'), spellcheck: 'false' });
+  const body = el('div', { class: 'fp-body' });
+  const box = el('div', { class: 'fmt-pop' }, input, body);
+  const groups = w.groups ? Object.entries(w.groups) : [['', w.options]];
+  const known = new Set(groups.flatMap(([, l]) => l));
+  const rest = w.options.filter((o) => !known.has(o));
+  if (rest.length) groups.push(['', rest]);
+  const render = () => {
+    const q = input.value.trim().toLowerCase();
+    body.textContent = '';
+    let first = null;
+    for (const [g, list] of groups) {
+      const items = list.filter((o) => w.options.includes(o) && (!q || String(o).toLowerCase().includes(q) || optLabel(w, o).toLowerCase().includes(q)));
+      if (!items.length) continue;
+      const grid = el('div', { class: 'fp-grid' });
+      for (const o of items) {
+        const b = el('button', {
+          class: o === current ? 'on' : '',
+          text: optLabel(w, o),
+          title: optLabel(w, o),
+          onclick: () => {
+            closePicker();
+            onPick(o);
+          },
+        });
+        if (!first) first = o;
+        grid.append(b);
+      }
+      body.append(el('div', { class: 'fp-group' }, g ? el('h5', { text: groupLabel(g) }) : null, grid));
+    }
+    if (!first) body.append(el('div', { class: 'sp-empty', text: t('lib.none') }));
+    return first;
+  };
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+    if (e.key === 'Escape') closePicker();
+    if (e.key === 'Enter') {
+      const f = render();
+      if (f != null) {
+        closePicker();
+        onPick(f);
+      }
+    }
+  });
+  document.body.append(box);
+  const bw = 360;
+  box.style.left = clamp(rect.left, 8, window.innerWidth - bw - 8) + 'px';
+  const top = rect.bottom + 4;
+  box.style.top = (top + 420 > window.innerHeight ? Math.max(8, rect.top - 424) : top) + 'px';
+  picker = box;
+  render();
+  input.focus();
+  setTimeout(() => document.addEventListener('pointerdown', pickerOutside, true), 0);
 }
