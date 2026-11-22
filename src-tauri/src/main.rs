@@ -3,6 +3,7 @@
 
 mod commands;
 mod engine;
+mod installer;
 mod kinds;
 mod mesh;
 mod ops;
@@ -29,6 +30,12 @@ fn main() {
             commands::clear_cache,
             commands::run_graph,
             commands::cancel_run,
+            installer::tool_status,
+            installer::install_tool,
+            installer::remove_tool,
+            installer::open_tools_folder,
+            ops::sheet::sheet_preview,
+            ops::pdftools::pdf_info,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Morph");
