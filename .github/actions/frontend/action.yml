@@ -1,0 +1,25 @@
+name: Frontend checks
+description: Syntax and catalog checks plus a headless Chrome smoke test that refreshes docs/screenshot.png
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Static checks
+      shell: bash
+      run: node scripts/check-frontend.mjs
+    - name: Smoke test
+      shell: bash
+      run: node scripts/smoke.mjs
+    - name: Commit screenshot
+      if: github.event_name == 'push'
+      shell: bash
+      run: |
+        if [ -n "$(git status --porcelain docs/screenshot.png)" ]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshot.png
+          git commit -m "docs: update screenshot [skip ci]"
+          git push || echo "::warning::could not push the screenshot"
+        fi
