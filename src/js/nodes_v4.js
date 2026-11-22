@@ -80,3 +80,15 @@ look.label = 'effect';
 look.labels = { ...(look.labels || {}), old_film: 'old film' };
 
 export const NODE_TOTAL = Object.keys(NODE_DEFS).length;
+
+// Deep link for the browser demo and the website: ?view=converter opens the Converter window.
+if (typeof window !== 'undefined' && new URLSearchParams(location.search).get('view') === 'converter') {
+  let tries = 0;
+  const open = () => {
+    const b = document.getElementById('btn-quick');
+    const booting = (() => { const r = document.getElementById('boot'); return r && !r.hidden; })();
+    if (b && b.offsetParent !== null && !booting) { b.click(); return; }
+    if (++tries < 60) setTimeout(open, 200);
+  };
+  window.addEventListener('load', () => setTimeout(open, 300));
+}
