@@ -360,7 +360,7 @@ export class Editor {
     const d = curve(this.screen(this.sockPos(a, 'out', l.out)), this.screen(this.sockPos(b, 'in', l.in)), this.view.z);
     l.path.setAttribute('d', d);
     l.hit.setAttribute('d', d);
-    l.path.setAttribute('stroke-width', String(Math.max(1.5, 3 * this.view.z)));
+    l.path.setAttribute('stroke-width', String(Math.max(1.25, 2 * this.view.z)));
     l.path.classList.toggle('running', b.status === 'running');
     l.path.classList.toggle('dim', !!(a.bypass || b.bypass));
   }
@@ -567,7 +567,15 @@ export class Editor {
       this.toggleCollapse(n.id);
     });
     n.warnEl = el('span', { class: 'warn-ic', title: def.needs ? t('insp.needs', { tool: def.needs }) : '' }, icon('alert', 13));
-    e.append(el('div', { class: 'node-head' }, dot, n.titleEl, el('span', { class: 'tag', text: t('nd.bypassed') }), n.warnEl, el('span', { class: 'done-ic' }, icon('check', 13)), n.badgeEl));
+    const more = el('button', { class: 'nd-more', title: t('nd.more') }, icon('more', 14));
+    more.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+    more.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      if (!this.sel.has(n.id)) this.select(n.id);
+      const cb = this.opts.onContextMenu;
+      if (cb) cb(ev, { kind: 'node', id: n.id, world: this.toWorld(ev.clientX, ev.clientY) });
+    });
+    e.append(el('div', { class: 'node-head' }, dot, n.titleEl, el('span', { class: 'tag', text: t('nd.bypassed') }), n.warnEl, el('span', { class: 'done-ic' }, icon('check', 13)), n.badgeEl, more));
     const rows = Math.max(def.inputs.length, def.outputs.length);
     n.cntEls = [];
     if (rows) {
