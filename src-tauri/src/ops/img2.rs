@@ -150,7 +150,7 @@ pub fn text_image(text: &str, px: f32, color: &str, font: &str, bold: bool, shad
     let (defs, fattr) = if shadow {
         (
             format!(
-                r#"<filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="{:.2}" stdDeviation="{:.2}" flood-color="#000000" flood-opacity="0.55"/></filter>"#,
+                r##"<filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="{:.2}" stdDeviation="{:.2}" flood-color="#000000" flood-opacity="0.55"/></filter>"##,
                 px * 0.05,
                 px * 0.08
             ),
@@ -775,7 +775,7 @@ pub fn palette(ctx: &Ctx, p: &Params, files: Vec<FileItem>) -> Result<Vec<FileIt
             _ => {
                 let sw = 160;
                 let mut svg = format!(
-                    r#"<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="220"><rect width="100%" height="100%" fill="#ffffff"/>"#,
+                    r##"<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="220"><rect width="100%" height="100%" fill="#ffffff"/>"##,
                     sw * colors.len()
                 );
                 for (i, (c, _)) in colors.iter().enumerate() {
@@ -783,7 +783,7 @@ pub fn palette(ctx: &Ctx, p: &Params, files: Vec<FileItem>) -> Result<Vec<FileIt
                     let l = 0.2126 * c[0] as f64 + 0.7152 * c[1] as f64 + 0.0722 * c[2] as f64;
                     let _ = l;
                     svg.push_str(&format!(
-                        r#"<rect x="{x}" y="0" width="{sw}" height="170" fill="{h}"/><text x="{tx}" y="203" font-family="monospace" font-size="20" text-anchor="middle" fill="#222222">{h}</text>"#,
+                        r##"<rect x="{x}" y="0" width="{sw}" height="170" fill="{h}"/><text x="{tx}" y="203" font-family="monospace" font-size="20" text-anchor="middle" fill="#222222">{h}</text>"##,
                         h = hex(c),
                         tx = x + sw / 2
                     ));
@@ -923,7 +923,7 @@ pub fn base64(ctx: &Ctx, p: &Params, files: Vec<FileItem>) -> Result<Vec<FileIte
         ctx.check()?;
         let bytes = std::fs::read(&it.path)?;
         let b = base64::engine::general_purpose::STANDARD.encode(&bytes);
-        entries.push((it, b));
+        entries.push((*it, b));
     }
     let class = |it: &FileItem| {
         let s: String = it.stem().chars().map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' }).collect();
