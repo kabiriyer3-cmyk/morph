@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='theme-color' content='#0b0e14'>
+<title>Morph</title>
+<link rel='icon' type='image/svg+xml' href='assets/logo.svg'>
+<link rel='stylesheet' href='css/app.css'>
+<script>
+(function () {
+  var queue = [];
+  var NL = String.fromCharCode(10);
+  function out(msg) {
+    var pre = document.getElementById('boot-errors');
+    if (!pre) { queue.push(msg); return; }
+    pre.hidden = false;
+    pre.textContent += msg + NL;
+  }
+  window.__err = out;
+  window.addEventListener('error', function (e) {
+    var tg = e.target;
+    if (tg && tg !== window && tg.tagName) {
+      if (tg.tagName === 'SCRIPT' || tg.tagName === 'LINK') out('Failed to load ' + (tg.src || tg.href));
+      return;
+    }
+    var m = String(e.message || 'Error');
+    if (m.indexOf('ResizeObserver') >= 0) return;
+    out(m + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : ''));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason;
+    out('Unhandled: ' + ((r && (r.stack || r.message)) || String(r)));
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+    var q = queue.splice(0);
+    for (var i = 0; i < q.length; i++) out(q[i]);
+    var pre = document.getElementById('boot-errors');
+    if (pre) pre.addEventListener('click', function () { pre.hidden = true; });
+  });
+})();
+</script>
+</head>
+<body>
+<div id='app'>
+  <header id='topbar'>
+    <div class='brand'><img src='assets/logo.svg' alt=''><img class='wordmark' src='assets/wordmark.svg' alt='morph'></div>
+    <div class='tb-group'>
+      <button class='tb-btn' id='btn-new' data-icon='file-plus' data-i18n-title='top.new'></button>
+      <button class='tb-btn' id='btn-open' data-icon='folder-open' data-i18n-title='top.open'></button>
+      <button class='tb-btn' id='btn-save' data-icon='save' data-i18n-title='top.save'></button>
+    </div>
+    <div class='tb-group'>
+      <button class='tb-btn' id='btn-undo' data-icon='undo' data-i18n-title='top.undo'></button>
+      <button class='tb-btn' id='btn-redo' data-icon='redo' data-i18n-title='top.redo'></button>
+    </div>
+    <div class='tb-group'>
+      <button class='tb-btn' id='btn-fit' data-icon='fit' data-i18n-title='top.fit'></button>
+      <button class='tb-btn' id='btn-arrange' data-icon='arrange' data-i18n-title='top.arrange'></button>
+    </div>
+    <input id='wf-name' spellcheck='false' autocomplete='off' data-i18n-placeholder='top.untitled' data-i18n-title='top.name'>
+    <div class='tb-spacer'></div>
+    <div id='run-progress' hidden><div class='bar'><i></i></div><span class='label'></span></div>
+    <button id='btn-run' class='run-btn'><span class='ico' data-icon='play'></span><span class='lbl' data-i18n='top.run'>Run</span><kbd>Ctrl ⏎</kbd></button>
+  </header>
+  <div id='main'>
+    <nav id='sidebar'>
+      <button class='sb-btn' data-panel='library' data-icon='library' data-i18n-title='side.library'></button>
+      <button class='sb-btn' data-panel='templates' data-icon='templates' data-i18n-title='side.templates'></button>
+      <button class='sb-btn' data-panel='history' data-icon='history' data-i18n-title='side.history'></button>
+      <div class='sb-spacer'></div>
+      <button class='sb-btn' data-panel='settings' data-icon='settings' data-i18n-title='side.settings'></button>
+      <button class='sb-btn' id='btn-help' data-icon='help' data-i18n-title='side.help'></button>
+    </nav>
+    <aside id='panel' hidden>
+      <div class='panel-head'><h2 id='panel-title'></h2><button class='icon-btn' id='panel-close' data-icon='x'></button></div>
+      <div id='panel-body'></div>
+    </aside>
+    <section id='canvas-wrap'>
+      <div id='canvas' tabindex='-1'></div>
+      <div id='drop-hint' hidden><div><span data-icon='upload'></span><b data-i18n='drop.hint'></b></div></div>
+      <div id='zoom-tools'>
+        <button class='icon-btn' id='zoom-out' data-icon='minus'></button>
+        <button class='icon-btn' id='zoom-label'>100%</button>
+        <button class='icon-btn' id='zoom-in' data-icon='plus'></button>
+      </div>
+    </section>
+    <aside id='inspector'></aside>
+  </div>
+  <footer id='statusbar'>
+    <span id='st-msg'></span>
+    <span id='st-tools'></span>
+    <span class='st-spacer'></span>
+    <span id='st-nodes'></span>
+    <span id='st-ver'></span>
+  </footer>
+</div>
+<pre id='boot-errors' hidden></pre>
+<script type='module' src='js/main.js'></script>
+</body>
+</html>

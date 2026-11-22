@@ -1,0 +1,39 @@
+name: Build and upload
+description: Builds installers with tauri-action and uploads them to the draft release
+inputs:
+  release_id:
+    description: Draft release id
+    required: true
+  tag:
+    description: Release tag
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/linux-deps
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: src-tauri
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: npm install
+      shell: bash
+      run: npm install --no-audit --no-fund
+    - uses: tauri-apps/tauri-action@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        releaseId: ${{ inputs.release_id }}
+        retryAttempts: 2
+    - name: Portable exe
+      if: runner.os == 'Windows'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        VERSION="${TAG#v}"
+        cp src-tauri/target/release/morph.exe "Morph_${VERSION}_x64_portable.exe"
+        gh release upload "$TAG" "Morph_${VERSION}_x64_portable.exe" --clobber

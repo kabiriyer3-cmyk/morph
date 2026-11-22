@@ -1,0 +1,9 @@
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/icons/
+cargo.json
+cargo.err
+*.log
+.DS_Store
+Thumbs.db

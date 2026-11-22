@@ -1,0 +1,17 @@
+{
+  "name": "morph",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Node-based multitool for your files",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "check": "node scripts/check-frontend.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
